@@ -5,12 +5,27 @@ import math
 import time
 import json
 from cryptography.fernet import Fernet
+WIDTH,HEIGHT = 680,680
 from loader import load
 textures=load()
 pygame.init()
 pygame.mixer.init()
 keys = pygame.key.get_pressed()
 keyE = b'nL5cTPi0324Gk2zgRDR6E4Y2iVHfWnrKu4kGzcB1ZnU='
+
+
+cheesboardmap=[
+    ["tc","sc","lc","dc","kc","lc","sc","tc",],
+    ["pc","pc","pc","pc","pc","pc","pc","pc",],
+    ["","","","","","","","",],
+    ["","","","","","","","",],
+    ["","","","","","","","",],
+    ["","","","","","","","",],
+    ["pb","pb","pb","pb","pb","pb","pb","pb",],
+    ["tb","sb","lb","db","kb","lb","sb","tb",]
+
+]
+
 
 def ens(file_data):
     f=Fernet(keyE)
@@ -25,14 +40,14 @@ def end():
     decrypted_data = f.decrypt(encrypted_data)
     decrypted_data1=json.loads(decrypted_data.decode('utf-8'))
     return decrypted_data1
-
+"""
 def read():
     info=end()
     return info
 info=read()
 def save(info):
     ens(info)
-
+"""
 
 def collison(x1,y1,r1,x2,y2,r2): 
     dx = x2 - x1
@@ -68,8 +83,7 @@ keydict={
     
 }
 clock = pygame.time.Clock()
-WIDTH,HEIGHT = 760,760
-window = pygame.display.set_mode((WIDTH,HEIGHT))
+window = pygame.display.set_mode((WIDTH+400,HEIGHT))
 def highlight(width,height,x,y,mousePos):
     if mousePos[0] > x and mousePos[0] < x + width and mousePos[1] > y and mousePos[1] < y + height:
         return True

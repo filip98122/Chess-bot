@@ -5,4 +5,5 @@ class king:
         s.y=y
         s.color=color
         s.moveopt=moveopt
+    def calc_move_opt():
         
