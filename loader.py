@@ -1,4 +1,5 @@
-from generalinfo import *
+import pygame
+WIDTH,HEIGHT=680,680
 def load():
     textures={}
     imeslika=['skakac','pesak','dama','kralj','lovac','top']
@@ -11,4 +12,6 @@ def load():
             nonscaledpic=pygame.image.load(f'{imeslika[j]}{bojaslike}.png')
             textures[f'{imeslika[j]}{bojaslike}']=pygame.transform.scale(nonscaledpic,((nonscaledpic.get_width()/100)*(WIDTH/8),(nonscaledpic.get_height()/100)*(HEIGHT/8)))
     textures["board"]=pygame.transform.scale(pygame.image.load("cheesboard.png"),(WIDTH,HEIGHT))
+    
+    
     return textures

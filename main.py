@@ -1,10 +1,24 @@
 from generalinfo import *
+pieces=piececheck(cheesboardmap)
+def clickedspace(map,x,y):
+    tilevalue=map[y][x]
+    if tilevalue=="..":
+        return None
+    if tilevalue[1]!=turn:
+        return None
+    else:
+        index=None
+        for i in range(len(pieces)):
+            if pieces[i].x==x and pieces[i].y==y:
+                index=i
+                break
+    return index
 def render():
     window.blit(textures["board"],(0,0))
     for i in range(8):
         for j in range(8):
             currentpiece=cheesboardmap[i][j]
-            if currentpiece=="":
+            if currentpiece=="..":
                 continue
             currentpiece=currentpiece[0]
             if currentpiece=="p":
@@ -28,6 +42,12 @@ while True:
     events = pygame.event.get()
     mouseState = pygame.mouse.get_pressed()
     mousePos = pygame.mouse.get_pos()
+    if mouseState[0]:
+        try:
+            polje=cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]
+            print(polje)
+        except:
+            pass
     if keys[pygame.K_ESCAPE]:
         break
     for event in events:

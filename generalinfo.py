@@ -1,30 +1,39 @@
 import os
-import pygame
+from loader import *
+textures=load()
 import random
 import math
 import time
 import json
+from king import *
 from cryptography.fernet import Fernet
-WIDTH,HEIGHT = 680,680
-from loader import load
-textures=load()
+
 pygame.init()
 pygame.mixer.init()
 keys = pygame.key.get_pressed()
 keyE = b'nL5cTPi0324Gk2zgRDR6E4Y2iVHfWnrKu4kGzcB1ZnU='
-
-
+circlesurface=pygame.Surface((WIDTH/8, HEIGHT/8), pygame.SRCALPHA)
+circlecolor=(147,151,151,127)
 cheesboardmap=[
     ["tc","sc","lc","dc","kc","lc","sc","tc",],
     ["pc","pc","pc","pc","pc","pc","pc","pc",],
-    ["","","","","","","","",],
-    ["","","","","","","","",],
-    ["","","","","","","","",],
-    ["","","","","pb","","","",],
-    ["pb","pb","pb","pb","pb","pb","pb","pb",],
+    ["..","..","..","..","..","..","..","..",],
+    ["..","..","..","..","..","..","..","..",],
+    ["..","..","..","..","..","..","..","..",],
+    ["..","..","..","..","pb","..","..","..",],
+    ["pb","pb","pb","pb","..","pb","pb","pb",],
     ["tb","sb","lb","db","kb","lb","sb","tb",]
 
 ]
+def piececheck(map):
+    pieces=[]
+    for i in range(8):
+        for j in range(8):
+            if map[i][j][0]=="k":
+                pieces.append(king(j,i,map[i][j][1]))
+
+    return pieces
+
 
 
 def ens(file_data):
