@@ -15,7 +15,7 @@ class king:
         current=map[s.y][s.x]
         for i in range(len(s.spaces)):
             try:
-                if map[s.y+s.spaces[i][1]][s.x+s.spaces[i][0]]=="" or map[s.y+s.spaces[i][1]][s.x+s.spaces[i][0]][1]==s.oppositecolor:
+                if map[s.y+s.spaces[i][1]][s.x+s.spaces[i][0]]==".." or map[s.y+s.spaces[i][1]][s.x+s.spaces[i][0]][1]==s.oppositecolor:
                     s.moveopt.append([s.y+s.spaces[i][1],s.x+s.spaces[i][0]])
             except:
                 continue
