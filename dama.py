@@ -11,6 +11,7 @@ class dama:
         s.moveopt=[]
         s.times=9
         s.spaces=[[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0]]
+        s.alive=True
     def calc_move_opt(s,map):
         s.moveopt=[]
         for i in range(len(s.spaces)):

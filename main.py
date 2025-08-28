@@ -13,6 +13,21 @@ def clickedspace(map,x,y):
                 index=i
                 break
     return index
+
+def clickedspacezap(map,x,y):
+    tilevalue=map[y][x]
+    if tilevalue=="..":
+        return None
+    if tilevalue[1]==turn:
+        return None
+    else:
+        index=None
+        for i in range(len(pieces)):
+            if pieces[i].x==x and pieces[i].y==y:
+                index=i
+                break
+    return index
+
 def render():
     window.blit(textures["board"],(0,0))
     for i in range(8):
@@ -35,7 +50,8 @@ def render():
                 slika="dama"
             window.blit(textures[f"{slika}{cheesboardmap[i][j][1]}"],(j*(WIDTH/8)-(textures[f"{slika}{cheesboardmap[i][j][1]}"].get_width()/2)+(WIDTH/8/2),i*(HEIGHT/8)-(textures[f"{slika}{cheesboardmap[i][j][1]}"].get_height()/2)+(HEIGHT/8/2)))
 breaksure=0
-turn="b"
+turn="c"
+nemoj=False
 places=[]
 while True:
     window.fill("Black")
@@ -46,14 +62,43 @@ while True:
     if mouseState[0]:
         try:
             polje=cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]
+            
             for i in range(len(places)):
-                if places[i][0]==[int(mousePos[1]//(WIDTH/8))] and places[i][0]==[int(mousePos[0]//(WIDTH/8))]:
-                    pass
+                if places[i][0]==int(mousePos[1]//(WIDTH/8)) and places[i][1]==int(mousePos[0]//(WIDTH/8)):
+                    try:
+                        pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
+                        pieces[pojedena].alive=False
+                    except:
+                        pass
+                    try:
+                        pieces[pieceindex].moved=True
+                    except:
+                        pass
+                    cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]=cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]
+                    cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]=".."
+                    pieces[pieceindex].x=int(mousePos[0]//(WIDTH/8))
+                    pieces[pieceindex].y=int(mousePos[1]//(WIDTH/8))
+                    nemoj=True
                     #Move piece
-            pieceindex=clickedspace(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
-            places=pieces[pieceindex].calc_move_opt(cheesboardmap)
+            if nemoj:
+                nemoj=False
+                places=[]
+                if turn=="b":
+                    turn="c"
+                else:
+                    turn="b"
+                pieceindex=None
+            else:
+                pieceindex=clickedspace(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
+                places=pieces[pieceindex].calc_move_opt(cheesboardmap)
         except:
             pass
+    countzapojedanjevar=0
+    for i in range(len(pieces)):
+        if pieces[countzapojedanjevar].alive==False:
+            del pieces[countzapojedanjevar]
+            countzapojedanjevar-=1
+        countzapojedanjevar+=1
     render()
     for i in range(len(places)):
         pygame.draw.circle(window,pygame.Color(147,151,151),(places[i][1]*(WIDTH/8)+(WIDTH/16),places[i][0]*(HEIGHT/8)+(HEIGHT/16)),(WIDTH/32))

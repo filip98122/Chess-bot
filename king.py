@@ -10,7 +10,9 @@ class king:
             s.oppositecolor="b"
         s.moveopt=[]
         s.spaces=[[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0]]
+        s.alive=True
     def calc_move_opt(s,map):
+        
         s.moveopt=[]
         current=map[s.y][s.x]
         for i in range(len(s.spaces)):

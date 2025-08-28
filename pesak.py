@@ -15,6 +15,7 @@ class pesak:
         s.moveopt=[]
         s.moved=False
         s.moveopt=[]
+        s.alive=True
     def calc_move_opt(s,map):
         s.moveopt=[]
         for i in range(len(s.spaces)):

@@ -10,6 +10,7 @@ class knight:
             s.oppositecolor="b"
         s.moveopt=[]
         s.spaces=[[1,-2],[2,-1],[2,1],[1,2],[-1,2],[-2,1],[-2,-1],[-1,-2]]
+        s.alive=True
     def calc_move_opt(s,map):
         s.moveopt=[]
         for i in range(len(s.spaces)):
