@@ -5,14 +5,7 @@ import random
 import math
 import time
 import json
-from king import *
-from knight import *
-from top import *
-from lovac import *
-from dama import *
-from pesak import *
 from cryptography.fernet import Fernet
-
 pygame.init()
 pygame.mixer.init()
 keys = pygame.key.get_pressed()
@@ -23,30 +16,16 @@ cheesboardmap=[
     ["tc","sc","lc","dc","kc","lc","sc","tc",],
     ["pc","pc","pc","pc","pc","pc","pc","pc",],
     ["..","..","..","..","..","..","..","..",],
+    ["..","..","..","..","tc","..","..","..",],
     ["..","..","..","..","..","..","..","..",],
-    ["..","db","..","..","lb","..","tb","..",],
-    ["..","..","..","dc","dc","..","..","..",],
+    ["..","..","..","..","..","..","..","..",],
     ["pb","pb","pb","pb","lb","pb","pb","pb",],
     ["tb","sb","lb","db","kb","lb","sb","tb",]
 
 ]
-def piececheck(map):
-    pieces=[]
-    for i in range(8):
-        for j in range(8):
-            if map[i][j][0]=="k":
-                pieces.append(king(j,i,map[i][j][1]))
-            if map[i][j][0]=="s":
-                pieces.append(knight(j,i,map[i][j][1]))
-            if map[i][j][0]=="l":
-                pieces.append(lovac(j,i,map[i][j][1]))
-            if map[i][j][0]=="d":
-                pieces.append(dama(j,i,map[i][j][1]))
-            if map[i][j][0]=="t":
-                pieces.append(top(j,i,map[i][j][1]))
-            if map[i][j][0]=="p":
-                pieces.append(pesak(j,i,map[i][j][1]))
-    return pieces
+
+    
+#def seeifcheckmate():
 
 
 

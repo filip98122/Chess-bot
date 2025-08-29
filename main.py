@@ -1,5 +1,14 @@
 from generalinfo import *
-pieces=piececheck(cheesboardmap)
+from spoljasnjinfo import *
+
+
+def space(y,x):
+    index=None
+    for i in range(len(pieces)):
+        if pieces[i].x==x and pieces[i].y==y:
+            index=i
+            break
+    return index
 def clickedspace(map,x,y):
     tilevalue=map[y][x]
     if tilevalue=="..":
@@ -50,9 +59,13 @@ def render():
                 slika="dama"
             window.blit(textures[f"{slika}{cheesboardmap[i][j][1]}"],(j*(WIDTH/8)-(textures[f"{slika}{cheesboardmap[i][j][1]}"].get_width()/2)+(WIDTH/8/2),i*(HEIGHT/8)-(textures[f"{slika}{cheesboardmap[i][j][1]}"].get_height()/2)+(HEIGHT/8/2)))
 breaksure=0
-turn="c"
+turn="b"
 nemoj=False
 places=[]
+da=True
+currenttrack=[-1,-1]
+takedeep=copy.deepcopy(cheesboardmap)
+check=False
 while True:
     window.fill("Black")
     keys = pygame.key.get_pressed()
@@ -88,9 +101,16 @@ while True:
                 else:
                     turn="b"
                 pieceindex=None
-            else:
+                takedeep=copy.deepcopy(cheesboardmap)
+                check=seeifcheck(turn,takedeep)
+                currenttrack=[-1,-1]
+            elif mousePos[0]!=int(mousePos[0]//(WIDTH/8)) or currenttrack[1]!=int(mousePos[1]//(WIDTH/8)):
+                da=False
                 pieceindex=clickedspace(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
-                places=pieces[pieceindex].calc_move_opt(cheesboardmap)
+                places=pieces[pieceindex].calc_move_opt(cheesboardmap,takedeep)
+                currenttrack=[pieces[pieceindex].x,pieces[pieceindex].y]
+                cheesboardmap=takedeep
+                takedeep=copy.deepcopy(cheesboardmap)
         except:
             pass
     countzapojedanjevar=0
