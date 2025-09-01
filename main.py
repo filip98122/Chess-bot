@@ -107,6 +107,7 @@ while True:
                     check=seeifcheck(turn,pieces,cheesboardmap,takedeep)
                     currenttrack=[-1,-1]
                     verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep)
+                    cheesboardmap=takedeep
                     if verdict=="n":
                         pass
                     else:
@@ -139,6 +140,65 @@ while True:
                 breaksure=1
         if breaksure==1:
             break
+        #"""
+        color="b"
+        piecescheck=[]
+        verdictp=False
+        gobreak=False
+        lovac1=False
+        skakac1=False
+        lovac2=False
+        for i in range(8):
+            for j in range(8):
+                if cheesboardmap[i][j][1]==color:
+                    if cheesboardmap[i][j][0]=="d" or cheesboardmap[i][j][0]=="t" or cheesboardmap[i][j][0]=="p":
+                        verdictp=True
+                        gobreak=True
+                        break
+                    if cheesboardmap[i][j][0]=="l":
+                        if lovac1:
+                            verdictp=True
+                            gobreak=True
+                            break
+                        lovac1=True
+                        if lovac1 and skakac1:
+                            verdictp=True
+                            gobreak=True
+                            break
+                    piecescheck.append(cheesboardmap[i][j][0])
+            if gobreak:
+                break
+        color="c"
+        piecescheck=[]
+        gobreak=False
+        lovac1=False
+        skakac1=False
+        lovac2=False
+        for i in range(8):
+            for j in range(8):
+                if cheesboardmap[i][j][1]==color:
+                    if cheesboardmap[i][j][0]=="d" or cheesboardmap[i][j][0]=="t" or cheesboardmap[i][j][0]=="p":
+                        verdictp=True
+                        gobreak=True
+                        break
+                    if cheesboardmap[i][j][0]=="l":
+                        if lovac1:
+                            verdictp=True
+                            gobreak=True
+                            break
+                        lovac1=True
+                        if lovac1 and skakac1:
+                            verdictp=True
+                            gobreak=True
+                            break
+                    piecescheck.append(cheesboardmap[i][j][0])
+            if gobreak:
+                break
+        if verdictp:
+            pass
+        else:
+            prozor=1
+        #"""
     if prozor==1:
         timeshell=300
         while timeshell>0:
@@ -154,6 +214,8 @@ while True:
             mousePos = pygame.mouse.get_pos()
             window.blit(textures["stalemate"],(0,0))
             timeshell-=1
+            pygame.display.update()
+            clock.tick(60)
     if prozor==2:
         timeshell=300
         while timeshell>0:
@@ -169,5 +231,7 @@ while True:
             mousePos = pygame.mouse.get_pos()
             timeshell-=1
             window.blit(textures["checkmate"],(0,0))
+            pygame.display.update()
+            clock.tick(60)
     pygame.display.update()
     clock.tick(60)
