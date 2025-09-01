@@ -66,69 +66,108 @@ da=True
 currenttrack=[-1,-1]
 takedeep=copy.deepcopy(cheesboardmap)
 check=False
+prozor=0
 while True:
     window.fill("Black")
     keys = pygame.key.get_pressed()
     events = pygame.event.get()
     mouseState = pygame.mouse.get_pressed()
     mousePos = pygame.mouse.get_pos()
-    if mouseState[0]:
-        try:
-            polje=cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]
-            
-            for i in range(len(places)):
-                if places[i][0]==int(mousePos[1]//(WIDTH/8)) and places[i][1]==int(mousePos[0]//(WIDTH/8)):
-                    try:
-                        pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
-                        pieces[pojedena].alive=False
-                    except:
+    if prozor==0:
+        if mouseState[0]:
+            try:
+                polje=cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]
+                
+                for i in range(len(places)):
+                    if places[i][0]==int(mousePos[1]//(WIDTH/8)) and places[i][1]==int(mousePos[0]//(WIDTH/8)):
+                        try:
+                            pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
+                            pieces[pojedena].alive=False
+                        except:
+                            pass
+                        try:
+                            pieces[pieceindex].moved=True
+                        except:
+                            pass
+                        cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]=cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]
+                        cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]=".."
+                        pieces[pieceindex].x=int(mousePos[0]//(WIDTH/8))
+                        pieces[pieceindex].y=int(mousePos[1]//(WIDTH/8))
+                        nemoj=True
+                        #Move piece
+                if nemoj:
+                    nemoj=False
+                    places=[]
+                    if turn=="b":
+                        turn="c"
+                    else:
+                        turn="b"
+                    pieceindex=None
+                    takedeep=copy.deepcopy(cheesboardmap)
+                    check=seeifcheck(turn,pieces,cheesboardmap,takedeep)
+                    currenttrack=[-1,-1]
+                    verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep)
+                    if verdict=="n":
                         pass
-                    try:
-                        pieces[pieceindex].moved=True
-                    except:
-                        pass
-                    cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]=cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]
-                    cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]=".."
-                    pieces[pieceindex].x=int(mousePos[0]//(WIDTH/8))
-                    pieces[pieceindex].y=int(mousePos[1]//(WIDTH/8))
-                    nemoj=True
-                    #Move piece
-            if nemoj:
-                nemoj=False
-                places=[]
-                if turn=="b":
-                    turn="c"
-                else:
-                    turn="b"
-                pieceindex=None
-                takedeep=copy.deepcopy(cheesboardmap)
-                check=seeifcheck(turn,takedeep)
-                currenttrack=[-1,-1]
-            elif mousePos[0]!=int(mousePos[0]//(WIDTH/8)) or currenttrack[1]!=int(mousePos[1]//(WIDTH/8)):
-                da=False
-                pieceindex=clickedspace(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
-                places=pieces[pieceindex].calc_move_opt(cheesboardmap,takedeep)
-                currenttrack=[pieces[pieceindex].x,pieces[pieceindex].y]
-                cheesboardmap=takedeep
-                takedeep=copy.deepcopy(cheesboardmap)
-        except:
-            pass
-    countzapojedanjevar=0
-    for i in range(len(pieces)):
-        if pieces[countzapojedanjevar].alive==False:
-            del pieces[countzapojedanjevar]
-            countzapojedanjevar-=1
-        countzapojedanjevar+=1
-    render()
-    for i in range(len(places)):
-        pygame.draw.circle(window,pygame.Color(147,151,151),(places[i][1]*(WIDTH/8)+(WIDTH/16),places[i][0]*(HEIGHT/8)+(HEIGHT/16)),(WIDTH/32))
-    if keys[pygame.K_ESCAPE]:
-        break
-    for event in events:
-        if event.type == pygame.QUIT:
-            breaksure=1
-    if breaksure==1:
-        break
-    
+                    else:
+                        if verdict=="c":
+                            prozor=2
+                        else:
+                            prozor=1
+                elif mousePos[0]!=int(mousePos[0]//(WIDTH/8)) or currenttrack[1]!=int(mousePos[1]//(WIDTH/8)):
+                    da=False
+                    pieceindex=clickedspace(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
+                    places=pieces[pieceindex].calc_move_opt(cheesboardmap,takedeep)
+                    currenttrack=[pieces[pieceindex].x,pieces[pieceindex].y]
+                    cheesboardmap=takedeep
+                    takedeep=copy.deepcopy(cheesboardmap)
+            except:
+                pass
+        countzapojedanjevar=0
+        for i in range(len(pieces)):
+            if pieces[countzapojedanjevar].alive==False:
+                del pieces[countzapojedanjevar]
+                countzapojedanjevar-=1
+            countzapojedanjevar+=1
+        render()
+        for i in range(len(places)):
+            pygame.draw.circle(window,pygame.Color(147,151,151),(places[i][1]*(WIDTH/8)+(WIDTH/16),places[i][0]*(HEIGHT/8)+(HEIGHT/16)),(WIDTH/32))
+        if keys[pygame.K_ESCAPE]:
+            break
+        for event in events:
+            if event.type == pygame.QUIT:
+                breaksure=1
+        if breaksure==1:
+            break
+    if prozor==1:
+        timeshell=300
+        while timeshell>0:
+            for event in events:
+                if event.type == pygame.QUIT:
+                    breaksure=1
+            if breaksure==1:
+                break
+            window.fill("Black")
+            keys = pygame.key.get_pressed()
+            events = pygame.event.get()
+            mouseState = pygame.mouse.get_pressed()
+            mousePos = pygame.mouse.get_pos()
+            window.blit(textures["stalemate"],(0,0))
+            timeshell-=1
+    if prozor==2:
+        timeshell=300
+        while timeshell>0:
+            for event in events:
+                if event.type == pygame.QUIT:
+                    breaksure=1
+            if breaksure==1:
+                break
+            window.fill("Black")
+            keys = pygame.key.get_pressed()
+            events = pygame.event.get()
+            mouseState = pygame.mouse.get_pressed()
+            mousePos = pygame.mouse.get_pos()
+            timeshell-=1
+            window.blit(textures["checkmate"],(0,0))
     pygame.display.update()
     clock.tick(60)

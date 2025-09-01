@@ -16,19 +16,17 @@ circlecolor=(147,151,151,127)
 #    ["pc","pc","pc","pc","pc","pc","pc","pc",],
 cheesboardmap=[
 
+    ["tc","sc","lc","dc","kc","lc","sc","tc",],
+    ["pc","pc","pc","pc","pc","pc","pc","pc",],
     ["..","..","..","..","..","..","..","..",],
     ["..","..","..","..","..","..","..","..",],
     ["..","..","..","..","..","..","..","..",],
-    ["..","..","..","..","tc","..","..","..",],
     ["..","..","..","..","..","..","..","..",],
-    ["..","..","..","..","..","..","..","..",],
-    ["pb","pb","pb","pb","lb","pb","pb","pb",],
+    ["pb","pb","pb","pb","pb","pb","pb","pb",],
     ["tb","sb","lb","db","kb","lb","sb","tb",]
 
 ]
 
-    
-#def seeifcheckmate():
 
 
 
@@ -87,8 +85,9 @@ keydict={
     "heal":keys[pygame.K_h]
     
 }
+EXTRAW=400
 clock = pygame.time.Clock()
-window = pygame.display.set_mode((WIDTH+400,HEIGHT))
+window = pygame.display.set_mode((WIDTH+EXTRAW,HEIGHT))
 def highlight(width,height,x,y,mousePos):
     if mousePos[0] > x and mousePos[0] < x + width and mousePos[1] > y and mousePos[1] < y + height:
         return True
