@@ -266,14 +266,17 @@ class pesak:
             s.oppositecolor="c"
             s.spaces=[[0,-1]]
             s.eatopt=[[-1,-1],[1,-1]]
+            s.en_passant=[[-1,0],[1,0]]
         else:
             s.oppositecolor="b"
             s.spaces=[[0,1]]
             s.eatopt=[[1,1],[-1,1]]
+            s.en_passant=[[-1,0],[1,0]]
         s.moveopt=[]
         s.moved=False
         s.moveopt=[]
         s.alive=True
+        s.justtwo=False
     def calc_move_opt(s,map,map1):
         s.moveopt=[]
         for i in range(len(s.spaces)):
@@ -311,11 +314,11 @@ class pesak:
         for i in range(len(s.eatopt)):
             try:
                 if map[s.y+s.eatopt[i][1]][s.x+s.eatopt[i][0]][1]==s.oppositecolor:
-                    if s.y+s.spaces[i][1]>=0 and s.y+s.spaces[i][1]<len(map):
-                        if s.x+s.spaces[i][0]>=0 and s.x+s.spaces[i][0]<len(map[s.y+s.spaces[i][1]]):
+                    if s.y+s.eatopt[i][1]>=0 and s.y+s.eatopt[i][1]<len(map):
+                        if s.x+s.eatopt[i][0]>=0 and s.x+s.eatopt[i][0]<len(map[s.y+s.eatopt[i][1]]):
                             h=map
                             h[s.y][s.x]=".."
-                            bilo=h[s.y+(s.spaces[i][1])][s.x+(s.spaces[i][0])]
+                            bilo=h[s.y+(s.eatopt[i][1])][s.x+(s.eatopt[i][0])]
                             h[s.y+(s.eatopt[i][1])][s.x+(s.eatopt[i][0])]=f"p{s.color}"
                             sah=seeifcheck(s.color,pieces,h,map1)
                             h[s.y][s.x]=f"p{s.color}"
@@ -326,6 +329,24 @@ class pesak:
                                 s.moveopt.append([s.y+s.eatopt[i][1],s.x+s.eatopt[i][0]])
             except:
                 continue
+        for i in range(len(s.en_passant)):
+            if map[s.y+s.en_passant[i][1]][s.x+s.en_passant[i][0]][1]==s.oppositecolor:
+                if s.y+s.en_passant[i][1]>=0 and s.y+s.en_passant[i][1]<len(map):
+                    if s.x+s.en_passant[i][0]>=0 and s.x+s.en_passant[i][0]<len(map[s.y+s.en_passant[i][1]]):
+                        if map[s.y+s.en_passant[i][1]][s.x+s.en_passant[i][0]][0]=="p":
+                            indexa=space(s.y+s.en_passant[i][1],s.x+s.en_passant[i][0],pieces)
+                            if pieces[indexa].justtwo:
+                                h=map
+                                h[s.y][s.x]=".."
+                                bilo=h[s.y+(s.spaces[i][1])][s.x+(s.en_passant[i][0])]
+                                h[s.y+(s.spaces[i][1])][s.x+(s.en_passant[i][0])]=f"p{s.color}"
+                                sah=seeifcheck(s.color,pieces,h,map1)
+                                h[s.y][s.x]=f"p{s.color}"
+                                h[s.y+(s.spaces[i][1])][s.x+(s.en_passant[i][0])]=bilo
+                                if sah:
+                                    pass
+                                else:
+                                    s.moveopt.append([s.y+s.spaces[i][1],s.x+s.en_passant[i][0],indexa])
         return s.moveopt
         
 

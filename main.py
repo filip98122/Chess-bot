@@ -86,7 +86,21 @@ while True:
                         except:
                             pass
                         try:
+                            if pieces[pieceindex].moved==False:
+                                if turn=="b":
+                                    if pieces[pieceindex].y==6:
+                                        pieces[pieceindex].justtwo=True
+                                else:
+                                    if pieces[pieceindex].y==1:
+                                        pieces[pieceindex].justtwo=True
                             pieces[pieceindex].moved=True
+                        
+                        except:
+                            pass
+                        
+                        try:
+                            pieces[places[i][2]].alive=False
+                            cheesboardmap[pieces[places[i][2]].y][pieces[places[i][2]].x]=".."
                         except:
                             pass
                         cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]=cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]
@@ -102,6 +116,13 @@ while True:
                         turn="c"
                     else:
                         turn="b"
+                    for i in range(len(pieces)):
+                        if pieces[i].color==turn:
+                            try:
+                                a=pieces[i].justtwo
+                                pieces[i].justtwo=False
+                            except:
+                                pass
                     pieceindex=None
                     takedeep=copy.deepcopy(cheesboardmap)
                     check=seeifcheck(turn,pieces,cheesboardmap,takedeep)
