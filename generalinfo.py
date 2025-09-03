@@ -1,6 +1,6 @@
 import os
 from loader import *
-textures=load()
+textures,tilewh=load()
 import random
 import math
 import time
@@ -97,7 +97,7 @@ keydict={
     "heal":keys[pygame.K_h]
     
 }
-EXTRAW=400
+EXTRAW=425
 clock = pygame.time.Clock()
 window = pygame.display.set_mode((WIDTH+EXTRAW,HEIGHT))
 def highlight(width,height,x,y,mousePos):

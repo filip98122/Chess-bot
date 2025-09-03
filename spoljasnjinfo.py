@@ -330,10 +330,10 @@ class pesak:
             except:
                 continue
         for i in range(len(s.en_passant)):
-            if map[s.y+s.en_passant[i][1]][s.x+s.en_passant[i][0]][1]==s.oppositecolor:
-                if s.y+s.en_passant[i][1]>=0 and s.y+s.en_passant[i][1]<len(map):
-                    if s.x+s.en_passant[i][0]>=0 and s.x+s.en_passant[i][0]<len(map[s.y+s.en_passant[i][1]]):
-                        if map[s.y+s.en_passant[i][1]][s.x+s.en_passant[i][0]][0]=="p":
+            if s.y+s.en_passant[i][1]>=0 and s.y+s.en_passant[i][1]<len(map):
+                if s.x+s.en_passant[i][0]>=0 and s.x+s.en_passant[i][0]<len(map[s.y+s.en_passant[i][1]]):
+                    if map[s.y+s.en_passant[i][1]][s.x+s.en_passant[i][0]][0]=="p":
+                        if map[s.y+s.en_passant[i][1]][s.x+s.en_passant[i][0]][1]==s.oppositecolor:
                             indexa=space(s.y+s.en_passant[i][1],s.x+s.en_passant[i][0],pieces)
                             if pieces[indexa].justtwo:
                                 h=map
@@ -347,6 +347,7 @@ class pesak:
                                     pass
                                 else:
                                     s.moveopt.append([s.y+s.spaces[i][1],s.x+s.en_passant[i][0],indexa])
+        
         return s.moveopt
         
 

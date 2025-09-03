@@ -67,8 +67,11 @@ currenttrack=[-1,-1]
 takedeep=copy.deepcopy(cheesboardmap)
 check=False
 prozor=0
+sa1da=False
+lprom=["dama","top","lovac","skakac"]
+daenpassant=False
 while True:
-    window.fill("Black")
+    window.fill((165,169,180))
     keys = pygame.key.get_pressed()
     events = pygame.event.get()
     mouseState = pygame.mouse.get_pressed()
@@ -76,42 +79,99 @@ while True:
     if prozor==0:
         if mouseState[0]:
             try:
-                polje=cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]
-                
+                if daenpassant==False:
+                    polje=cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]
+                if daenpassant:
+                    for j in range(4):
+                        a=button_colision(textures[f"{lprom[i]}{turn}"].get_width(),textures[f"{lprom[i]}{turn}"].get_height(),WIDTH+(tilewh/2)+tilewh*i-(tilewh/8),tilewh-textures[f"{lprom[i]}{turn}"].get_height(),mousePos,mouseState)
+                        if a:
+                            pieces[pieceindex].alive=False
+                            if turn=="b":
+                                l2=[pieces[pieceindex].x,pieces[pieceindex].y-1]
+                            else:
+                                l2=[pieces[pieceindex].x,pieces[pieceindex].y+1]
+                            cheesboardmap[pieces[pieceindex].y][l2[0]]=".."
+                            f=f"{lprom[i]}{turn}"
+                            cheesboardmap[l2[1]][l2[0]]=f"{f[0]}{turn}"
+                            if f=="dama":
+                                pieces.append(dama(l2[0],l2[1],turn))
+                            if f=="top":
+                                pieces.append(top(l2[0],l2[1],turn))
+                            if f=="lovac":
+                                pieces.append(lovac(l2[0],l2[1],turn))
+                            if f=="skakac":
+                                pieces.append(knight(l2[0],l2[1],turn))
+                            nemoj=False
+                            places=[]
+                            nemoj=False
+                            places=[]
+                            daenpassant=False
+                            if turn=="b":
+                                turn="c"
+                            else:
+                                turn="b"
+                            for i in range(len(pieces)):
+                                if pieces[i].color==turn:
+                                    try:
+                                        a=pieces[i].justtwo
+                                        pieces[i].justtwo=False
+                                    except:
+                                        pass
+                            pieceindex=None
+                            takedeep=copy.deepcopy(cheesboardmap)
+                            check=seeifcheck(turn,pieces,cheesboardmap,takedeep)
+                            currenttrack=[-1,-1]
+                            verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep)
+                            cheesboardmap=takedeep
+                            if verdict=="n":
+                                pass
+                            else:
+                                if verdict=="c":
+                                    prozor=2
+                                else:
+                                    prozor=1
                 for i in range(len(places)):
                     if places[i][0]==int(mousePos[1]//(WIDTH/8)) and places[i][1]==int(mousePos[0]//(WIDTH/8)):
-                        try:
-                            pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
-                            pieces[pojedena].alive=False
-                        except:
-                            pass
-                        try:
-                            if pieces[pieceindex].moved==False:
-                                if turn=="b":
-                                    if pieces[pieceindex].y==6:
-                                        pieces[pieceindex].justtwo=True
-                                else:
-                                    if pieces[pieceindex].y==1:
-                                        pieces[pieceindex].justtwo=True
-                            pieces[pieceindex].moved=True
-                        
-                        except:
-                            pass
-                        
-                        try:
-                            pieces[places[i][2]].alive=False
-                            cheesboardmap[pieces[places[i][2]].y][pieces[places[i][2]].x]=".."
-                        except:
-                            pass
-                        cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]=cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]
-                        cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]=".."
-                        pieces[pieceindex].x=int(mousePos[0]//(WIDTH/8))
-                        pieces[pieceindex].y=int(mousePos[1]//(WIDTH/8))
-                        nemoj=True
+                        if cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==0 or cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==7 or daenpassant:
+
+                                        
+                            daenpassant=True
+                            sa1da=True
+                        else:
+                            try:
+                                pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
+                                pieces[pojedena].alive=False
+                            except:
+                                pass
+                            try:
+                                if pieces[pieceindex].moved==False:
+                                    if turn=="b":
+                                        if pieces[pieceindex].y==6:
+                                            pieces[pieceindex].justtwo=True
+                                    else:
+                                        if pieces[pieceindex].y==1:
+                                            pieces[pieceindex].justtwo=True
+                                pieces[pieceindex].moved=True
+                            
+                            except:
+                                pass
+                            
+                            try:
+                                pieces[places[i][2]].alive=False
+                                cheesboardmap[pieces[places[i][2]].y][pieces[places[i][2]].x]=".."
+                            except:
+                                pass
+                            cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]=cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]
+                            cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]=".."
+                            pieces[pieceindex].x=int(mousePos[0]//(WIDTH/8))
+                            pieces[pieceindex].y=int(mousePos[1]//(WIDTH/8))
+                            sa1da=False
+                            nemoj=True
                         #Move piece
                 if nemoj:
                     nemoj=False
                     places=[]
+                    daenpassant=False
                     if turn=="b":
                         turn="c"
                     else:
@@ -138,11 +198,14 @@ while True:
                             prozor=1
                 elif mousePos[0]!=int(mousePos[0]//(WIDTH/8)) or currenttrack[1]!=int(mousePos[1]//(WIDTH/8)):
                     da=False
-                    pieceindex=clickedspace(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
-                    places=pieces[pieceindex].calc_move_opt(cheesboardmap,takedeep)
-                    currenttrack=[pieces[pieceindex].x,pieces[pieceindex].y]
-                    cheesboardmap=takedeep
-                    takedeep=copy.deepcopy(cheesboardmap)
+                    if sa1da==False:
+                        daenpassant=False
+                        pieceindex=clickedspace(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
+                        places=pieces[pieceindex].calc_move_opt(cheesboardmap,takedeep)
+                        currenttrack=[pieces[pieceindex].x,pieces[pieceindex].y]
+                        cheesboardmap=takedeep
+                        takedeep=copy.deepcopy(cheesboardmap)
+                    sa1da=False
             except:
                 pass
         countzapojedanjevar=0
@@ -152,6 +215,9 @@ while True:
                 countzapojedanjevar-=1
             countzapojedanjevar+=1
         render()
+        if daenpassant:
+            for i in range(4):
+                window.blit(textures[f"{lprom[i]}{turn}"],(WIDTH+(tilewh/2)+tilewh*i-(tilewh/8),tilewh-textures[f"{lprom[i]}{turn}"].get_height()))
         for i in range(len(places)):
             pygame.draw.circle(window,pygame.Color(147,151,151),(places[i][1]*(WIDTH/8)+(WIDTH/16),places[i][0]*(HEIGHT/8)+(HEIGHT/16)),(WIDTH/32))
         if keys[pygame.K_ESCAPE]:
@@ -221,6 +287,7 @@ while True:
             prozor=1
         #"""
     if prozor==1:
+        time.sleep(5)
         timeshell=300
         while timeshell>0:
             for event in events:
@@ -238,6 +305,7 @@ while True:
             pygame.display.update()
             clock.tick(60)
     if prozor==2:
+        time.sleep(5)
         timeshell=300
         while timeshell>0:
             for event in events:
