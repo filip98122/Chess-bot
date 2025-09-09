@@ -76,6 +76,9 @@ def functionchoose(s):
 
 
 def new(over,info):
+    go=True
+    if info["local"]["cheesboardmap"]==0:
+        go=False
     global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces
     cheesboardmap=[
 
@@ -88,7 +91,7 @@ def new(over,info):
         ["pb","pb","pb","pb","pb","pb","pb","pb",],
         ["tb","sb","lb","db","kb","lb","sb","tb",]
     ]
-    if over:
+    if over and go:
         cheesboardmap=info["local"]["cheesboardmap"]
     breaksure=0
     turn="b"
@@ -102,7 +105,7 @@ def new(over,info):
     sa1da=False
     lprom=["dama","top","lovac","skakac"]
     daenpassant=False
-    if over:
+    if over and go:
         check=info["local"]["check"]
         turn=info["local"]["turn"]
     prozor=0
@@ -198,6 +201,7 @@ class top:
         s.spaces=[[0,1],[0,-1],[1,0],[-1,0]]
         s.alive=True
         s.apifs=False
+        s.mrd=False
     def calc_move_opt(s,map,map1):
         s.moveopt=[]
         s.apifs=False
@@ -541,6 +545,7 @@ class king:
         s.moveopt=[]
         s.spaces=[[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0]]
         s.alive=True
+        s.pomeranje=False
     def calc_move_opt(s,map,map1):
         
         s.moveopt=[]
@@ -563,6 +568,38 @@ class king:
                                 s.moveopt.append([s.y+s.spaces[i][1],s.x+s.spaces[i][0]])
             except:
                 continue
+        if s.pomeranje==False:
+            if map[s.y][s.x+1]==".." and map[s.y][s.x+2]=="..":
+                o=space(s.y,s.x+3,pieces)
+                cnt=False
+                if o==None:
+                    pass
+                else:
+                    try:
+                        if pieces[o].mrd==False:
+                            cnt=True
+                    except:
+                        pass
+                    if cnt:
+                        if check!=True:
+                            
+                            h=map1
+                            h[s.y][s.x]=".."
+                            bilo=h[s.y][s.x+1]
+                            h[s.y][s.x+1]=f"k{s.color}"
+                            sah=seeifcheck(s.color,pieces,h,map1)
+                            h[s.y][s.x]=f"k{s.color}"
+                            h[s.y][s.x+1]=bilo
+                            
+                            h=map1
+                            h[s.y][s.x]=".."
+                            bilo=h[s.y][s.x+2]
+                            h[s.y][s.x+2]=f"k{s.color}"
+                            sah1=seeifcheck(s.color,pieces,h,map1)
+                            h[s.y][s.x]=f"k{s.color}"
+                            h[s.y][s.x+2]=bilo
+                            if sah==False and sah1==False:
+                                s.moveopt.append([s.y,s.x+2])
         return s.moveopt
 
 

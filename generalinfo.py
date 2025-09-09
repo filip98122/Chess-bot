@@ -65,8 +65,8 @@ def read():
 info=read()
 def save(info):
     ens(info)
-save({info["local"]["cheesboardmap"]})
-exit()
+
+
 def collison(x1,y1,r1,x2,y2,r2): 
     dx = x2 - x1
     dy = y2 - y1

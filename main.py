@@ -79,6 +79,12 @@ checkt=textures["font"].render("Check!",True,(0,0,0))
 checkmatet=textures["font"].render("Checkmate!",True,(0,0,0))
 stalemate=textures["font"].render("Stalemate!",True,(0,0,0))
 hold=False
+belikralj=False
+crnikralj=False
+top1=False
+top2=False
+top3=False
+top4=False
 while True:
     window.fill((165,169,180))
     keys = pygame.key.get_pressed()
@@ -157,14 +163,13 @@ while True:
                 for i in range(len(places)):
                     if places[i][0]==int(mousePos[1]//(WIDTH/8)) and places[i][1]==int(mousePos[0]//(WIDTH/8)):
                         if cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==0 or cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==7 or daenpassant:
-
-                                        
                             daenpassant=True
                             sa1da=True
                         else:
                             try:
                                 pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
                                 pieces[pojedena].alive=False
+                                pieces[pojedena].mrd=True
                             except:
                                 pass
                             try:
@@ -185,10 +190,18 @@ while True:
                                 cheesboardmap[pieces[places[i][2]].y][pieces[places[i][2]].x]=".."
                             except:
                                 pass
+                            try:
+                                pieces[pieceindex].mrd=True
+                            except:
+                                pass
                             cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]=cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]
                             cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]=".."
                             pieces[pieceindex].x=int(mousePos[0]//(WIDTH/8))
                             pieces[pieceindex].y=int(mousePos[1]//(WIDTH/8))
+                            try:
+                                pieces[pieceindex].pomeranje=True
+                            except:
+                                pass
                             sa1da=False
                             nemoj=True
                         #Move piece
