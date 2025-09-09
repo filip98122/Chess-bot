@@ -1,5 +1,5 @@
 import copy
-
+prozor=0
 def s(x,y,x1,y2):
     spaces=[[1,-2],[2,-1],[2,1],[1,2],[-1,2],[-2,1],[-2,-1],[-1,-2]]
     for i in range(len(spaces)):
@@ -63,8 +63,50 @@ def k(x,y,x1,y2):
             if spaces[i][1]+y==y2:
                 return True
     return False
+def functionchoose(s):
+    global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces
+    if s=="con":
+        new(True,info)
+    if s=="start":
+        new(False,info)
+    return prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces
 
 
+
+
+
+def new(over,info):
+    global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces
+    cheesboardmap=[
+
+        ["tc","sc","lc","dc","kc","lc","sc","tc",],
+        ["pc","pc","pc","pc","pc","pc","pc","pc",],
+        ["..","..","..","..","..","..","..","..",],
+        ["..","..","..","..","..","..","..","..",],
+        ["..","..","..","..","..","..","..","..",],
+        ["..","..","..","..","..","..","..","..",],
+        ["pb","pb","pb","pb","pb","pb","pb","pb",],
+        ["tb","sb","lb","db","kb","lb","sb","tb",]
+    ]
+    if over:
+        cheesboardmap=info["local"]["cheesboardmap"]
+    breaksure=0
+    turn="b"
+    nemoj=False
+    places=[]
+    da=True
+    currenttrack=[-1,-1]
+    takedeep=copy.deepcopy(cheesboardmap)
+    check=False
+    prozor=0
+    sa1da=False
+    lprom=["dama","top","lovac","skakac"]
+    daenpassant=False
+    if over:
+        check=info["local"]["check"]
+        turn=info["local"]["turn"]
+    prozor=0
+    pieces=piececheck(cheesboardmap)
 
 
 
@@ -258,7 +300,7 @@ class dama:
 
 
 class pesak:
-    def __init__(s,x,y,color):
+    def __init__(s,x,y,color,moved):
         s.x=x
         s.y=y
         s.color=color
@@ -273,7 +315,7 @@ class pesak:
             s.eatopt=[[1,1],[-1,1]]
             s.en_passant=[[-1,0],[1,0]]
         s.moveopt=[]
-        s.moved=False
+        s.moved=moved
         s.moveopt=[]
         s.alive=True
         s.justtwo=False
@@ -415,6 +457,33 @@ class lovac:
 #=======================================
 
 from generalinfo import *
+class Button:
+    def __init__(s,x,y,text,prozor):
+        s.x=x
+        s.y=y
+        s.prozor=prozor
+        s.text=text
+        s.scaledimg=textures["button"]
+        s.width=s.scaledimg.get_width()
+        s.height=s.scaledimg.get_height()
+        s.x-=s.width/2
+        s.font=pygame.font.SysFont("S",(int(textures["skakacuv"].get_height())))
+        s.im=s.font.render(s.text,True,(0,0,0))
+    def genral(s,prozor,mousepos,mousestate,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces):
+        
+        if s.prozor==prozor:
+            if button_colision(s.width,s.height,s.x,s.y,mousepos,mousestate):
+                if s.text=="Continue":
+                    n="con"
+                else:
+                    n="start"
+                prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces=functionchoose(n)
+            window.blit(s.scaledimg,(s.x,s.y))
+            window.blit(textures["skakacuv"],(s.x+(s.width/14.22727272727263),s.y+(s.height/2)-(textures["skakacuv"].get_height()/2)))
+            window.blit(textures["skakacb"],(s.x+s.width-(s.width/14.22727272727263)-textures["skakacb"].get_width(),s.y+(s.height/2)-(textures["skakacb"].get_height()/2)))
+            window.blit(s.im,(s.x+s.width/2-s.im.get_width()/2,s.y+s.height/2-s.im.get_height()/2))
+        return prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces
+l_buttons=[Button(WIDTH/2+EXTRAW/2,HEIGHT/5,"Continue",-1),Button(WIDTH/2+EXTRAW/2,HEIGHT/5*3,"New game",-1)]
 class knight:
     def __init__(s,x,y,color):
         s.x=x
@@ -519,6 +588,9 @@ def piececheck(map):
             if map[i][j][0]=="t":
                 pieces.append(top(j,i,map[i][j][1]))
             if map[i][j][0]=="p":
-                pieces.append(pesak(j,i,map[i][j][1]))
+                n=True
+                if i==1 or i==6:
+                    n=False
+                pieces.append(pesak(j,i,map[i][j][1],n))
     return pieces
 pieces=piececheck(cheesboardmap)

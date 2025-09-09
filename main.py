@@ -1,7 +1,9 @@
 from generalinfo import *
 from spoljasnjinfo import *
-
-
+def takesave(info):
+    info["local"]["cheesboardmap"]=cheesboardmap
+    info["local"]["check"]=check
+    info["local"]["turn"]=turn
 def space(y,x):
     index=None
     for i in range(len(pieces)):
@@ -49,7 +51,7 @@ def render():
                 slika="pesak"
             if currentpiece=="t":
                 slika="top"
-            if currentpiece=="s":
+            if currentpiece=="s": 
                 slika="skakac"
             if currentpiece=="l":
                 slika="lovac"
@@ -57,6 +59,9 @@ def render():
                 slika="kralj"
             if currentpiece=="d":
                 slika="dama"
+            if pieceindex!=None:
+                if pieces[pieceindex].y==i and pieces[pieceindex].x==j:
+                    pygame.draw.rect(window,(255, 219, 88),pygame.rect.Rect(j*(WIDTH/8),i*(HEIGHT/8),textures["board"].get_width()/8,textures["board"].get_height()/8))
             window.blit(textures[f"{slika}{cheesboardmap[i][j][1]}"],(j*(WIDTH/8)-(textures[f"{slika}{cheesboardmap[i][j][1]}"].get_width()/2)+(WIDTH/8/2),i*(HEIGHT/8)-(textures[f"{slika}{cheesboardmap[i][j][1]}"].get_height()/2)+(HEIGHT/8/2)))
 breaksure=0
 turn="b"
@@ -66,16 +71,35 @@ da=True
 currenttrack=[-1,-1]
 takedeep=copy.deepcopy(cheesboardmap)
 check=False
-prozor=0
+prozor=-1
 sa1da=False
 lprom=["dama","top","lovac","skakac"]
 daenpassant=False
+checkt=textures["font"].render("Check!",True,(0,0,0))
+checkmatet=textures["font"].render("Checkmate!",True,(0,0,0))
+stalemate=textures["font"].render("Stalemate!",True,(0,0,0))
+hold=False
 while True:
     window.fill((165,169,180))
     keys = pygame.key.get_pressed()
     events = pygame.event.get()
     mouseState = pygame.mouse.get_pressed()
     mousePos = pygame.mouse.get_pos()
+    if prozor==-1:
+        currenttrack=[-1,-1]
+        window.blit(textures["mainm"],(0,0))
+        
+        if keys[pygame.K_ESCAPE] and hold==False:
+            hold=True
+            break
+        else:
+            hold=False
+    if keys[pygame.K_ESCAPE]:
+        hold=True
+        takesave(info)
+        prozor=-1
+    else:
+        hold=False
     if prozor==0:
         if mouseState[0]:
             try:
@@ -83,7 +107,7 @@ while True:
                     polje=cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]
                 if daenpassant:
                     for j in range(4):
-                        a=button_colision(textures[f"{lprom[i]}{turn}"].get_width(),textures[f"{lprom[i]}{turn}"].get_height(),WIDTH+(tilewh/2)+tilewh*i-(tilewh/8),tilewh-textures[f"{lprom[i]}{turn}"].get_height(),mousePos,mouseState)
+                        a=button_colision(textures[f"{lprom[j]}{turn}"].get_width(),textures[f"{lprom[j]}{turn}"].get_height(),WIDTH+(tilewh/2)+tilewh*j-(tilewh/8),tilewh-textures[f"{lprom[j]}{turn}"].get_height(),mousePos,mouseState)
                         if a:
                             pieces[pieceindex].alive=False
                             if turn=="b":
@@ -91,7 +115,7 @@ while True:
                             else:
                                 l2=[pieces[pieceindex].x,pieces[pieceindex].y+1]
                             cheesboardmap[pieces[pieceindex].y][l2[0]]=".."
-                            f=f"{lprom[i]}{turn}"
+                            f=f"{lprom[j]}"
                             cheesboardmap[l2[1]][l2[0]]=f"{f[0]}{turn}"
                             if f=="dama":
                                 pieces.append(dama(l2[0],l2[1],turn))
@@ -110,11 +134,11 @@ while True:
                                 turn="c"
                             else:
                                 turn="b"
-                            for i in range(len(pieces)):
-                                if pieces[i].color==turn:
+                            for r in range(len(pieces)):
+                                if pieces[r].color==turn:
                                     try:
-                                        a=pieces[i].justtwo
-                                        pieces[i].justtwo=False
+                                        a=pieces[r].justtwo
+                                        pieces[r].justtwo=False
                                     except:
                                         pass
                             pieceindex=None
@@ -200,6 +224,7 @@ while True:
                     da=False
                     if sa1da==False:
                         daenpassant=False
+                        places=[]
                         pieceindex=clickedspace(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
                         places=pieces[pieceindex].calc_move_opt(cheesboardmap,takedeep)
                         currenttrack=[pieces[pieceindex].x,pieces[pieceindex].y]
@@ -215,13 +240,18 @@ while True:
                 countzapojedanjevar-=1
             countzapojedanjevar+=1
         render()
+        if check:
+            window.blit(checkt,(WIDTH+EXTRAW/2-checkt.get_width()/2,tilewh))
         if daenpassant:
             for i in range(4):
                 window.blit(textures[f"{lprom[i]}{turn}"],(WIDTH+(tilewh/2)+tilewh*i-(tilewh/8),tilewh-textures[f"{lprom[i]}{turn}"].get_height()))
         for i in range(len(places)):
             pygame.draw.circle(window,pygame.Color(147,151,151),(places[i][1]*(WIDTH/8)+(WIDTH/16),places[i][0]*(HEIGHT/8)+(HEIGHT/16)),(WIDTH/32))
         if keys[pygame.K_ESCAPE]:
-            break
+            hold=True
+            prozor=-1
+        else:
+            hold=False
         for event in events:
             if event.type == pygame.QUIT:
                 breaksure=1
@@ -287,7 +317,6 @@ while True:
             prozor=1
         #"""
     if prozor==1:
-        time.sleep(5)
         timeshell=300
         while timeshell>0:
             for event in events:
@@ -295,17 +324,18 @@ while True:
                     breaksure=1
             if breaksure==1:
                 break
-            window.fill("Black")
+            window.fill((165,169,180))
             keys = pygame.key.get_pressed()
             events = pygame.event.get()
             mouseState = pygame.mouse.get_pressed()
             mousePos = pygame.mouse.get_pos()
-            window.blit(textures["stalemate"],(0,0))
+            render()
+            window.blit(stalemate,(WIDTH+EXTRAW/2-stalemate.get_width()/2,tilewh))
             timeshell-=1
             pygame.display.update()
             clock.tick(60)
+        prozor=-1
     if prozor==2:
-        time.sleep(5)
         timeshell=300
         while timeshell>0:
             for event in events:
@@ -313,14 +343,20 @@ while True:
                     breaksure=1
             if breaksure==1:
                 break
-            window.fill("Black")
+            window.fill((165,169,180))
             keys = pygame.key.get_pressed()
             events = pygame.event.get()
             mouseState = pygame.mouse.get_pressed()
             mousePos = pygame.mouse.get_pos()
             timeshell-=1
-            window.blit(textures["checkmate"],(0,0))
+            render()
+            window.blit(checkmatet,(WIDTH+EXTRAW/2-checkmatet.get_width()/2,tilewh))
             pygame.display.update()
             clock.tick(60)
+        prozor=-1
+    for i in range(len(l_buttons)):
+        prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces=l_buttons[i].genral(prozor,mousePos,mouseState,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces)
     pygame.display.update()
     clock.tick(60)
+    currenttrack=[-1,-1]
+save(info)

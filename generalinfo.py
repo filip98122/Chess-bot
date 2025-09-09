@@ -42,28 +42,31 @@ cheesboardmap=[
 #"""
 
 
+
+
+
+
 def ens(file_data):
     f=Fernet(keyE)
     encrypted_data1=json.dumps(file_data).encode('utf-8')
     encrypted_data = f.encrypt(encrypted_data1)
-    with open("infojson.json", "wb") as file:
+    with open("info.json", "wb") as file:
         file.write(encrypted_data)
 def end():
     f=Fernet(keyE)
-    with open("infojson.json", "rb") as file:
+    with open("info.json", "rb") as file:
         encrypted_data = file.read()
     decrypted_data = f.decrypt(encrypted_data)
     decrypted_data1=json.loads(decrypted_data.decode('utf-8'))
     return decrypted_data1
-"""
 def read():
     info=end()
     return info
 info=read()
 def save(info):
     ens(info)
-"""
-
+save({info["local"]["cheesboardmap"]})
+exit()
 def collison(x1,y1,r1,x2,y2,r2): 
     dx = x2 - x1
     dy = y2 - y1

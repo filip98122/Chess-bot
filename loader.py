@@ -1,4 +1,6 @@
 import pygame
+pygame.init()
+pygame.font.init()
 WIDTH,HEIGHT=680,680
 EXTRAW=425
 
@@ -17,4 +19,9 @@ def load():
     textures["board"]=pygame.transform.scale(pygame.image.load("cheesboard.png"),(WIDTH,HEIGHT))
     textures["checkmate"]=pygame.transform.scale(pygame.image.load("checkmate.png"),(WIDTH+EXTRAW,HEIGHT))
     textures["stalemate"]=pygame.transform.scale(pygame.image.load("stalemate.png"),(WIDTH+EXTRAW,HEIGHT))
+    textures["font"]= pygame.font.SysFont('S', int(tilewh*2))
+    textures["mainm"]=pygame.transform.scale(pygame.image.load("mainmenub.png"),(WIDTH+EXTRAW,HEIGHT))
+    n=pygame.image.load("skakacbsup.png")
+    textures["skakacuv"]=pygame.transform.scale(n,((n.get_width()/100)*(WIDTH/8),(n.get_height()/100)*(HEIGHT/8)))
+    textures["button"]=pygame.transform.scale(pygame.image.load("button.png"),(tilewh*8,tilewh*3.2))
     return textures,tilewh*2
