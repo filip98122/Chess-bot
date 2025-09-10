@@ -206,6 +206,7 @@ class top:
         s.moveopt=[]
         s.apifs=False
         for i in range(len(s.spaces)):
+            s.apifs=False
             for j in range(1,1+s.times):
                 try:
                     if map[s.y+(s.spaces[i][1]*j)][s.x+(s.spaces[i][0]*j)]==".." or map[s.y+(s.spaces[i][1]*j)][s.x+(s.spaces[i][0]*j)][1]==s.oppositecolor:
@@ -264,6 +265,7 @@ class dama:
         s.apifs=False
         s.moveopt=[]
         for i in range(len(s.spaces)):
+            s.apifs=False
             for j in range(1,1+s.times):
                 try:
                     if map[s.y+(s.spaces[i][1]*j)][s.x+(s.spaces[i][0]*j)]==".." or map[s.y+(s.spaces[i][1]*j)][s.x+(s.spaces[i][0]*j)][1]==s.oppositecolor:
@@ -600,6 +602,37 @@ class king:
                             h[s.y][s.x+2]=bilo
                             if sah==False and sah1==False:
                                 s.moveopt.append([s.y,s.x+2])
+            if map[s.y][s.x-1]==".." and map[s.y][s.x-2]==".." and map[s.y][s.x-3]:
+                o=space(s.y,s.x-4,pieces)
+                cnt=False
+                if o==None:
+                    pass
+                else:
+                    try:
+                        if pieces[o].mrd==False:
+                            cnt=True
+                    except:
+                        pass
+                    if cnt:
+                        if check!=True:
+                            
+                            h=map1
+                            h[s.y][s.x]=".."
+                            bilo=h[s.y][s.x-1]
+                            h[s.y][s.x-1]=f"k{s.color}"
+                            sah=seeifcheck(s.color,pieces,h,map1)
+                            h[s.y][s.x]=f"k{s.color}"
+                            h[s.y][s.x-1]=bilo
+                            
+                            h=map1
+                            h[s.y][s.x]=".."
+                            bilo=h[s.y][s.x-2]
+                            h[s.y][s.x-2]=f"k{s.color}"
+                            sah1=seeifcheck(s.color,pieces,h,map1)
+                            h[s.y][s.x]=f"k{s.color}"
+                            h[s.y][s.x-2]=bilo
+                            if sah==False and sah1==False:
+                                s.moveopt.append([s.y,s.x-2])
         return s.moveopt
 
 

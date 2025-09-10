@@ -106,6 +106,12 @@ while True:
         prozor=-1
     else:
         hold=False
+#Game down
+#Game down
+#Game down
+#Game down
+#Game down
+#Game down
     if prozor==0:
         if mouseState[0]:
             try:
@@ -160,6 +166,12 @@ while True:
                                     prozor=2
                                 else:
                                     prozor=1
+#En passant up
+#En passant up
+#En passant up
+#En passant up
+#En passant up
+#En passant up
                 for i in range(len(places)):
                     if places[i][0]==int(mousePos[1]//(WIDTH/8)) and places[i][1]==int(mousePos[0]//(WIDTH/8)):
                         if cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==0 or cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==7 or daenpassant:
@@ -194,17 +206,39 @@ while True:
                                 pieces[pieceindex].mrd=True
                             except:
                                 pass
+                            castle=False
+                            try:
+                                if pieces[pieceindex].pomeranje==False:
+                                    castle=True
+                                pieces[pieceindex].pomeranje=True
+                            except:
+                                pass
+                            if castle:
+                                if int(mousePos[0]//(WIDTH/8))==2:
+                                    rooki=clickedspace(cheesboardmap,0,int(mousePos[1]//(WIDTH/8)))
+                                    pieces[rooki].x=3
+                                    cheesboardmap[int(mousePos[1]//(WIDTH/8))][0]=".."
+                                    cheesboardmap[int(mousePos[1]//(WIDTH/8))][3]=f"t{turn}"
+                                if int(mousePos[0]//(WIDTH/8))==6:
+                                    rooki=clickedspace(cheesboardmap,0,int(mousePos[1]//(WIDTH/8)))
+                                    pieces[rooki].x=5
+                                    cheesboardmap[int(mousePos[1]//(WIDTH/8))][7]=".."
+                                    cheesboardmap[int(mousePos[1]//(WIDTH/8))][5]=f"t{turn}"
                             cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]=cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]
                             cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]=".."
                             pieces[pieceindex].x=int(mousePos[0]//(WIDTH/8))
                             pieces[pieceindex].y=int(mousePos[1]//(WIDTH/8))
-                            try:
-                                pieces[pieceindex].pomeranje=True
-                            except:
-                                pass
                             sa1da=False
                             nemoj=True
                         #Move piece
+#Actual movement up
+#Actual movement up
+#Actual movement up
+#Actual movement up
+#Actual movement up
+#Actual movement up
+#Actual movement up
+#Actual movement up
                 if nemoj:
                     nemoj=False
                     places=[]
@@ -233,6 +267,15 @@ while True:
                             prozor=2
                         else:
                             prozor=1
+#Nemoj up
+#Nemoj up
+#Nemoj up
+#Nemoj up
+#Nemoj up
+#Nemoj up
+#Nemoj up
+#Nemoj up
+
                 elif mousePos[0]!=int(mousePos[0]//(WIDTH/8)) or currenttrack[1]!=int(mousePos[1]//(WIDTH/8)):
                     da=False
                     if sa1da==False:
@@ -244,6 +287,12 @@ while True:
                         cheesboardmap=takedeep
                         takedeep=copy.deepcopy(cheesboardmap)
                     sa1da=False
+#First click up
+#First click up
+#First click up
+#First click up
+#First click up
+#First click up
             except:
                 pass
         countzapojedanjevar=0
@@ -270,6 +319,15 @@ while True:
                 breaksure=1
         if breaksure==1:
             break
+
+#Render up and similar
+
+#Render up and similar
+
+#Render up and similar
+
+#Render up and similar
+
         #"""
         color="b"
         piecescheck=[]
@@ -329,6 +387,12 @@ while True:
         else:
             prozor=1
         #"""
+#Expanded stalemate
+#Expanded stalemate
+#Expanded stalemate
+#Expanded stalemate
+#Expanded stalemate
+#Expanded stalemate
     if prozor==1:
         timeshell=300
         while timeshell>0:
@@ -347,6 +411,8 @@ while True:
             timeshell-=1
             pygame.display.update()
             clock.tick(60)
+        cheesboardmap=0
+        takesave(info)
         prozor=-1
     if prozor==2:
         timeshell=300
@@ -366,6 +432,8 @@ while True:
             window.blit(checkmatet,(WIDTH+EXTRAW/2-checkmatet.get_width()/2,tilewh))
             pygame.display.update()
             clock.tick(60)
+        cheesboardmap=0
+        takesave(info)
         prozor=-1
     for i in range(len(l_buttons)):
         prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces=l_buttons[i].genral(prozor,mousePos,mouseState,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces)
