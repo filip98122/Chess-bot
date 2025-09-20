@@ -64,22 +64,64 @@ def k(x,y,x1,y2):
                 return True
     return False
 def functionchoose(s):
-    global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces
+    global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value
     if s=="con":
         new(True,info)
     if s=="start":
         new(False,info)
-    return prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces
+    return prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value
 
 
 
 
+
+def weightadder(color,weight,added):
+    if color=="c":
+        weight-=added
+    else:
+        weight+=added
+    return weight
+
+def board_judge(map,turn):
+    pawn=[1,1.1,2,3.6,5.4,8.5]
+    weight=0
+    skakac=0.0125
+    bishop=0.0013
+    queen= 0.0006
+    rook=  0.0012
+    subj=None
+    for i in range(8):
+        for j in range(8):
+            if map[i][j][0]=="p":
+                if map[i][j][1]=="c":
+                    weight-=pawn[i-1]
+                else:
+                    weight+=pawn[6-i]
+            if map[i][j][0]=="s":
+                subj=knight(j,i,map[i][j][1])
+                a=subj.calc_move_opt(map,map)
+                weight=weightadder(map[i][j][1],weight,len(a)*skakac+3)
+            if map[i][j][0]=="l":
+                subj=lovac(j,i,map[i][j][1])
+                a=subj.calc_move_opt(map,map)
+                weight=weightadder(map[i][j][1],weight,len(a)*bishop+3)
+            if map[i][j][0]=="d":
+                subj=dama(j,i,map[i][j][1])
+                a=subj.calc_move_opt(map,map)
+                weight=weightadder(map[i][j][1],weight,len(a)*queen+9.5)
+            if map[i][j][0]=="t":
+                subj=top(j,i,map[i][j][1])
+                a=subj.calc_move_opt(map,map)
+                weight=weightadder(map[i][j][1],weight,len(a)*rook+5)
+            
+                
+    return weight
 
 def new(over,info):
     go=True
     if info["local"]["cheesboardmap"]==0:
         go=False
-    global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces
+    global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value
     cheesboardmap=[
 
         ["tc","sc","lc","dc","kc","lc","sc","tc",],
@@ -102,15 +144,16 @@ def new(over,info):
     takedeep=copy.deepcopy(cheesboardmap)
     check=False
     prozor=0
+    value=board_judge(cheesboardmap)
     sa1da=False
     lprom=["dama","top","lovac","skakac"]
     daenpassant=False
     if over and go:
         check=info["local"]["check"]
         turn=info["local"]["turn"]
+        value=info["local"]["value"]
     prozor=0
     pieces=piececheck(cheesboardmap)
-
 
 
 
@@ -475,7 +518,7 @@ class Button:
         s.x-=s.width/2
         s.font=pygame.font.SysFont("S",(int(textures["skakacuv"].get_height())))
         s.im=s.font.render(s.text,True,(0,0,0))
-    def genral(s,prozor,mousepos,mousestate,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces):
+    def genral(s,prozor,mousepos,mousestate,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value):
         
         if s.prozor==prozor:
             if button_colision(s.width,s.height,s.x,s.y,mousepos,mousestate):
@@ -483,12 +526,12 @@ class Button:
                     n="con"
                 else:
                     n="start"
-                prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces=functionchoose(n)
+                prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value=functionchoose(n)
             window.blit(s.scaledimg,(s.x,s.y))
             window.blit(textures["skakacuv"],(s.x+(s.width/14.22727272727263),s.y+(s.height/2)-(textures["skakacuv"].get_height()/2)))
             window.blit(textures["skakacb"],(s.x+s.width-(s.width/14.22727272727263)-textures["skakacb"].get_width(),s.y+(s.height/2)-(textures["skakacb"].get_height()/2)))
             window.blit(s.im,(s.x+s.width/2-s.im.get_width()/2,s.y+s.height/2-s.im.get_height()/2))
-        return prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces
+        return prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value
 l_buttons=[Button(WIDTH/2+EXTRAW/2,HEIGHT/5,"Continue",-1),Button(WIDTH/2+EXTRAW/2,HEIGHT/5*3,"New game",-1)]
 class knight:
     def __init__(s,x,y,color):
@@ -602,7 +645,7 @@ class king:
                             h[s.y][s.x+2]=bilo
                             if sah==False and sah1==False:
                                 s.moveopt.append([s.y,s.x+2])
-            if map[s.y][s.x-1]==".." and map[s.y][s.x-2]==".." and map[s.y][s.x-3]:
+            if map[s.y][s.x-1]==".." and map[s.y][s.x-2]==".." and map[s.y][s.x-3]=="..":
                 o=space(s.y,s.x-4,pieces)
                 cnt=False
                 if o==None:

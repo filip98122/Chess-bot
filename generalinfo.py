@@ -66,7 +66,6 @@ info=read()
 def save(info):
     ens(info)
 
-
 def collison(x1,y1,r1,x2,y2,r2): 
     dx = x2 - x1
     dy = y2 - y1

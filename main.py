@@ -4,6 +4,7 @@ def takesave(info):
     info["local"]["cheesboardmap"]=cheesboardmap
     info["local"]["check"]=check
     info["local"]["turn"]=turn
+    info["loacal"]["value"]=value
 def space(y,x):
     index=None
     for i in range(len(pieces)):
@@ -85,6 +86,8 @@ top1=False
 top2=False
 top3=False
 top4=False
+value=0
+aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
 while True:
     window.fill((165,169,180))
     keys = pygame.key.get_pressed()
@@ -122,10 +125,6 @@ while True:
                         a=button_colision(textures[f"{lprom[j]}{turn}"].get_width(),textures[f"{lprom[j]}{turn}"].get_height(),WIDTH+(tilewh/2)+tilewh*j-(tilewh/8),tilewh-textures[f"{lprom[j]}{turn}"].get_height(),mousePos,mouseState)
                         if a:
                             pieces[pieceindex].alive=False
-                            if turn=="b":
-                                l2=[pieces[pieceindex].x,pieces[pieceindex].y-1]
-                            else:
-                                l2=[pieces[pieceindex].x,pieces[pieceindex].y+1]
                             cheesboardmap[pieces[pieceindex].y][l2[0]]=".."
                             f=f"{lprom[j]}"
                             cheesboardmap[l2[1]][l2[0]]=f"{f[0]}{turn}"
@@ -176,6 +175,11 @@ while True:
                     if places[i][0]==int(mousePos[1]//(WIDTH/8)) and places[i][1]==int(mousePos[0]//(WIDTH/8)):
                         if cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==0 or cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==7 or daenpassant:
                             daenpassant=True
+                            if turn=="b":
+                                l2=[pieces[pieceindex].x,pieces[pieceindex].y-1]
+                            else:
+                                l2=[pieces[pieceindex].x,pieces[pieceindex].y+1]
+                            l2[0]=int(mousePos[0]//(WIDTH/8))
                             sa1da=True
                         else:
                             try:
@@ -220,7 +224,7 @@ while True:
                                     cheesboardmap[int(mousePos[1]//(WIDTH/8))][0]=".."
                                     cheesboardmap[int(mousePos[1]//(WIDTH/8))][3]=f"t{turn}"
                                 if int(mousePos[0]//(WIDTH/8))==6:
-                                    rooki=clickedspace(cheesboardmap,0,int(mousePos[1]//(WIDTH/8)))
+                                    rooki=clickedspace(cheesboardmap,7,int(mousePos[1]//(WIDTH/8)))
                                     pieces[rooki].x=5
                                     cheesboardmap[int(mousePos[1]//(WIDTH/8))][7]=".."
                                     cheesboardmap[int(mousePos[1]//(WIDTH/8))][5]=f"t{turn}"
@@ -260,6 +264,8 @@ while True:
                     currenttrack=[-1,-1]
                     verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep)
                     cheesboardmap=takedeep
+                    value=board_judge(cheesboardmap,turn)
+                    aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
                     if verdict=="n":
                         pass
                     else:
@@ -319,6 +325,7 @@ while True:
                 breaksure=1
         if breaksure==1:
             break
+        window.blit(aaa,(WIDTH+(EXTRAW/2)-aaa.get_width()/2,tilewh*2))
 
 #Render up and similar
 
@@ -436,7 +443,9 @@ while True:
         takesave(info)
         prozor=-1
     for i in range(len(l_buttons)):
-        prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces=l_buttons[i].genral(prozor,mousePos,mouseState,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces)
+        prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value=l_buttons[i].genral(prozor,mousePos,mouseState,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value)
+    if prozor!=-1:
+        aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
     pygame.display.update()
     clock.tick(60)
     currenttrack=[-1,-1]
