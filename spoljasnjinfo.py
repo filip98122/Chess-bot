@@ -64,12 +64,14 @@ def k(x,y,x1,y2):
                 return True
     return False
 def functionchoose(s):
-    global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value
+    global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside
     if s=="con":
-        new(True,info)
+        new(True,info,0)
     if s=="start":
-        new(False,info)
-    return prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value
+        new(False,info,0)
+    if s=="ai":
+        new(False,info,3)
+    return prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside
 
 
 
@@ -117,11 +119,26 @@ def board_judge(map,turn):
                 
     return weight
 
-def new(over,info):
+
+def all_moves(color):
+    global pieces,cheesboardmap,takedeep
+    a=[]
+    for i in range(pieces):
+        if pieces[i].color==color:
+            a.append(pieces[i].calc_move_opt(cheesboardmap,takedeep))
+
+def play():
+    global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside
+    a=all_moves(turn)
+    for i in range(len(a)):
+        
+        
+        
+def new(over,info,p):
     go=True
     if info["local"]["cheesboardmap"]==0:
         go=False
-    global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value
+    global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside
     cheesboardmap=[
 
         ["tc","sc","lc","dc","kc","lc","sc","tc",],
@@ -143,16 +160,17 @@ def new(over,info):
     currenttrack=[-1,-1]
     takedeep=copy.deepcopy(cheesboardmap)
     check=False
-    prozor=0
-    value=board_judge(cheesboardmap)
+    prozor=p
     sa1da=False
+    playerside="b"
     lprom=["dama","top","lovac","skakac"]
     daenpassant=False
     if over and go:
-        check=info["local"]["check"]
         turn=info["local"]["turn"]
+    value=board_judge(cheesboardmap,turn)
+    if over and go:
+        check=info["local"]["check"]
         value=info["local"]["value"]
-    prozor=0
     pieces=piececheck(cheesboardmap)
 
 
@@ -518,25 +536,32 @@ class Button:
         s.x-=s.width/2
         s.font=pygame.font.SysFont("S",(int(textures["skakacuv"].get_height())))
         s.im=s.font.render(s.text,True,(0,0,0))
-    def genral(s,prozor,mousepos,mousestate,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value):
+    def genral(s,prozor,mousepos,mousestate,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside):
         
         if s.prozor==prozor:
             if button_colision(s.width,s.height,s.x,s.y,mousepos,mousestate):
                 if s.text=="Continue":
                     n="con"
-                else:
+                if s.text=="New game":
                     n="start"
-                prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value=functionchoose(n)
+                if s.text=="vs AI":
+                    n="ai"
+                prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside=functionchoose(n)
             window.blit(s.scaledimg,(s.x,s.y))
             window.blit(textures["skakacuv"],(s.x+(s.width/14.22727272727263),s.y+(s.height/2)-(textures["skakacuv"].get_height()/2)))
             window.blit(textures["skakacb"],(s.x+s.width-(s.width/14.22727272727263)-textures["skakacb"].get_width(),s.y+(s.height/2)-(textures["skakacb"].get_height()/2)))
             window.blit(s.im,(s.x+s.width/2-s.im.get_width()/2,s.y+s.height/2-s.im.get_height()/2))
-        return prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value
-l_buttons=[Button(WIDTH/2+EXTRAW/2,HEIGHT/5,"Continue",-1),Button(WIDTH/2+EXTRAW/2,HEIGHT/5*3,"New game",-1)]
+        return prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside
+l_buttons=[
+    
+    Button(WIDTH/2+EXTRAW/2,HEIGHT/5,"Continue",-1),
+    Button(WIDTH/2+EXTRAW/2,HEIGHT/5*2,"Two players",-1),
+    Button(WIDTH/2+EXTRAW/2,HEIGHT/5*3,"vs AI",-1)
+]
 class knight:
     def __init__(s,x,y,color):
         s.x=x
-        s.y=y
+        s.y=y 
         s.color=color
         if s.color=="b":
             s.oppositecolor="c"

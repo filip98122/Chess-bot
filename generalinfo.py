@@ -11,6 +11,7 @@ pygame.mixer.init()
 keys = pygame.key.get_pressed()
 keyE = b'nL5cTPi0324Gk2zgRDR6E4Y2iVHfWnrKu4kGzcB1ZnU='
 circlesurface=pygame.Surface((WIDTH/8, HEIGHT/8), pygame.SRCALPHA)
+playerside="b"
 circlecolor=(147,151,151,127)
 #    ["tc","sc","lc","dc","kc","lc","sc","tc",],   
 #    ["pc","pc","pc","pc","pc","pc","pc","pc",],
