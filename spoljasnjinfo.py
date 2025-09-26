@@ -120,18 +120,25 @@ def board_judge(map,turn):
     return weight
 
 
-def all_moves(color):
-    global pieces,cheesboardmap,takedeep
+def all_moves(color,map):
+    global pieces
     a=[]
     for i in range(pieces):
         if pieces[i].color==color:
-            a.append(pieces[i].calc_move_opt(cheesboardmap,takedeep))
+            l=pieces[i].calc_move_opt(map,map)
+            for j in range(len(l)):
+                a.append([l[j],i])
+    return a
 
 def play():
     global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside
     a=all_moves(turn)
     for i in range(len(a)):
-        
+        #a[i][0][0]=Y
+        #a[i][0][0]=X
+        #a[i][1]=pieceindex
+        pieces[a[i][1]].x=a[i][0][1]
+        pieces[a[i][1]].y=a[i][0][0]
         
         
 def new(over,info,p):
@@ -263,6 +270,8 @@ class top:
         s.alive=True
         s.apifs=False
         s.mrd=False
+ 
+    
     def calc_move_opt(s,map,map1):
         s.moveopt=[]
         s.apifs=False
