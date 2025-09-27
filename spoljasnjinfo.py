@@ -270,8 +270,22 @@ class top:
         s.alive=True
         s.apifs=False
         s.mrd=False
- 
-    
+    def tojson(s):
+        d={}
+        d["x"]=s.x
+        d["y"]=s.y
+        d["color"]=s.color
+        d["alive"]=s.alive
+        d["apifs"]=s.apifs
+        d["mrd"]=s.mrd
+        return d
+    def fromjson(s,d):
+        s.x=d["x"]
+        s.y=d["y"]
+        s.color=d["color"]
+        s.alive=d["alive"]
+        s.apifs=d["apifs"]
+        s.mrd=d["mrd"]
     def calc_move_opt(s,map,map1):
         s.moveopt=[]
         s.apifs=False
@@ -331,6 +345,20 @@ class dama:
         s.spaces=[[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0]]
         s.alive=True
         s.apifs=False
+    def tojson(s):
+        d={}
+        d["x"]=s.x
+        d["y"]=s.y
+        d["color"]=s.color
+        d["alive"]=s.alive
+        d["apifs"]=s.apifs
+        return d
+    def fromjson(s,d):
+        s.x=d["x"]
+        s.y=d["y"]
+        s.color=d["color"]
+        s.alive=d["alive"]
+        s.apifs=d["apifs"]
     def calc_move_opt(s,map,map1):
         s.apifs=False
         s.moveopt=[]
@@ -395,6 +423,24 @@ class pesak:
         s.moveopt=[]
         s.alive=True
         s.justtwo=False
+    def tojson(s):
+        d={}
+        d["x"]=s.x
+        d["y"]=s.y
+        d["color"]=s.color
+        d["alive"]=s.alive
+        d["mrd"]=s.mrd
+        d["moved"]=s.moved
+        d["justtwo"]=s.justtwo
+        return d
+    def fromjson(s,d):
+        s.x=d["x"]
+        s.y=d["y"]
+        s.color=d["color"]
+        s.alive=d["alive"]
+        s.mrd=d["mrd"]
+        s.moved=d["moved"]
+        s.justtwo=d["justtwo"]
     def calc_move_opt(s,map,map1):
         s.moveopt=[]
         for i in range(len(s.spaces)):
@@ -493,6 +539,20 @@ class lovac:
         s.spaces=[[-1,-1],[1,-1],[1,1],[-1,1]]
         s.alive=True
         s.apifs=False
+    def tojson(s):
+        d={}
+        d["x"]=s.x
+        d["y"]=s.y
+        d["color"]=s.color
+        d["alive"]=s.alive
+        d["apifs"]=s.apifs
+        return d
+    def fromjson(s,d):
+        s.x=d["x"]
+        s.y=d["y"]
+        s.color=d["color"]
+        s.alive=d["alive"]
+        s.apifs=d["apifs"]
     def calc_move_opt(s,map,map1):
         s.apifs=False
         s.moveopt=[]
@@ -579,6 +639,18 @@ class knight:
         s.moveopt=[]
         s.spaces=[[1,-2],[2,-1],[2,1],[1,2],[-1,2],[-2,1],[-2,-1],[-1,-2]]
         s.alive=True
+    def tojson(s):
+        d={}
+        d["x"]=s.x
+        d["y"]=s.y
+        d["color"]=s.color
+        d["alive"]=s.alive
+        return d
+    def fromjson(s,d):
+        s.x=d["x"]
+        s.y=d["y"]
+        s.color=d["color"]
+        s.alive=d["alive"]
     def calc_move_opt(s,map,map1):
         s.moveopt=[]
         for i in range(len(s.spaces)):
@@ -625,6 +697,22 @@ class king:
         s.spaces=[[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0]]
         s.alive=True
         s.pomeranje=False
+    def tojson(s):
+        d={}
+        d["x"]=s.x
+        d["y"]=s.y
+        d["color"]=s.color
+        d["alive"]=s.alive
+        d["apifs"]=s.apifs
+        d["pomeranje"]=s.pomeranje
+        return d
+    def fromjson(s,d):
+        s.x=d["x"]
+        s.y=d["y"]
+        s.color=d["color"]
+        s.alive=d["alive"]
+        s.apifs=d["apifs"]
+        s.pomeranje=d["pomeranje"]
     def calc_move_opt(s,map,map1):
         
         s.moveopt=[]
