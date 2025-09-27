@@ -841,6 +841,7 @@ def piececheck(map,goorfrom,info):
             info["lpieces"][f"{pieces[i].index}"] = pieces[i].tojson()
         else:
             pieces[i].fromjson(info["lpieces"][f"{pieces[i].index}"])
+            print(info["lpieces"][f"{pieces[i].index}"])
     save(info)
     info=read()
     return pieces,info
