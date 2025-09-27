@@ -60,13 +60,26 @@ def end():
     decrypted_data = f.decrypt(encrypted_data)
     decrypted_data1=json.loads(decrypted_data.decode('utf-8'))
     return decrypted_data1
+
+def ens(file_data):
+    with open("info.json", "w") as fa:
+        json.dump(file_data, fa)
+def end():
+    with open("info.json", "r") as fa:
+        file_data=fa.read()
+    file_data=json.loads(file_data)
+    return file_data
+
+
+
 def read():
     info=end()
     return info
 info=read()
 def save(info):
     ens(info)
-
+#save({'local': {'turn': 'b', 'check': False, 'cheesboardmap': None, 'value': 0.00}, 'ai': {},"lpieces":{}})
+#exit()
 def collison(x1,y1,r1,x2,y2,r2): 
     dx = x2 - x1
     dy = y2 - y1

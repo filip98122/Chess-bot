@@ -5,6 +5,12 @@ def takesave(info):
     info["local"]["check"]=check
     info["local"]["turn"]=turn
     info["local"]["value"]=value
+    for i in range(len(pieces)):
+        asa = pieces[i].tojson()
+        info["lpieces"][f"{pieces[i].index}"]=asa
+    save(info)
+    info=read()
+    return info
 def space(y,x):
     index=None
     for i in range(len(pieces)):
@@ -92,7 +98,10 @@ top4=False
 value=0
 aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
 playerside="b"
+keylogesc=0
 while True:
+    if keylogesc>=1:
+        keylogesc-=1
     window.fill((165,169,180))
     keys = pygame.key.get_pressed()
     events = pygame.event.get()
@@ -108,8 +117,10 @@ while True:
         else:
             hold=False
     if keys[pygame.K_ESCAPE]:
+        if hold==False and keylogesc==0:
+            info=takesave(info)
+            keylogesc=300
         hold=True
-        takesave(info)
         prozor=-1
     else:
         hold=False
@@ -311,6 +322,7 @@ while True:
                 del pieces[countzapojedanjevar]
                 countzapojedanjevar-=1
             pieces[countzapojedanjevar].index=countzapojedanjevar
+            
             countzapojedanjevar+=1
         render()
         if check:
@@ -424,7 +436,7 @@ while True:
             pygame.display.update()
             clock.tick(60)
         cheesboardmap=0
-        takesave(info)
+        info=takesave(info)
         prozor=-1
     if prozor==2:
         timeshell=300
@@ -445,7 +457,7 @@ while True:
             pygame.display.update()
             clock.tick(60)
         cheesboardmap=0
-        takesave(info)
+        info=takesave(info)
         prozor=-1
     if prozor==3:
         #if turn != playerside:
@@ -729,7 +741,7 @@ while True:
             prozor=1
         #"""
     for i in range(len(l_buttons)):
-        prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside=l_buttons[i].genral(prozor,mousePos,mouseState,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside)
+        prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside,info=l_buttons[i].genral(prozor,mousePos,mouseState,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside,info)
     if prozor!=-1:
         aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
     pygame.display.update()

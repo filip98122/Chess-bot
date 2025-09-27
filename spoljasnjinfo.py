@@ -64,14 +64,14 @@ def k(x,y,x1,y2):
                 return True
     return False
 def functionchoose(s):
-    global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside
+    global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,info
     if s=="con":
         new(True,info,0)
     if s=="start":
         new(False,info,0)
     if s=="ai":
         new(False,info,3)
-    return prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside
+    return prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside,info
 
 
 
@@ -100,19 +100,19 @@ def board_judge(map,turn):
                 else:
                     weight+=pawn[6-i]
             if map[i][j][0]=="s":
-                subj=knight(j,i,map[i][j][1])
+                subj=knight(j,i,map[i][j][1],-1)
                 a=subj.calc_move_opt(map,map)
                 weight=weightadder(map[i][j][1],weight,len(a)*skakac+3)
             if map[i][j][0]=="l":
-                subj=lovac(j,i,map[i][j][1])
+                subj=lovac(j,i,map[i][j][1],-1)
                 a=subj.calc_move_opt(map,map)
                 weight=weightadder(map[i][j][1],weight,len(a)*bishop+3)
             if map[i][j][0]=="d":
-                subj=dama(j,i,map[i][j][1])
+                subj=dama(j,i,map[i][j][1],-1)
                 a=subj.calc_move_opt(map,map)
                 weight=weightadder(map[i][j][1],weight,len(a)*queen+9.5)
             if map[i][j][0]=="t":
-                subj=top(j,i,map[i][j][1])
+                subj=top(j,i,map[i][j][1],-1)
                 a=subj.calc_move_opt(map,map)
                 weight=weightadder(map[i][j][1],weight,len(a)*rook+5)
             
@@ -178,7 +178,10 @@ def new(over,info,p):
     if over and go:
         check=info["local"]["check"]
         value=info["local"]["value"]
-    pieces=piececheck(cheesboardmap)
+    piececheckvar=0
+    if over and go:
+        piececheckvar=1
+    pieces,info=piececheck(cheesboardmap,piececheckvar,info)
 
 
 
@@ -277,7 +280,6 @@ class top:
         d["y"]=s.y
         d["color"]=s.color
         d["alive"]=s.alive
-        d["apifs"]=s.apifs
         d["mrd"]=s.mrd
         return d
     def fromjson(s,d):
@@ -285,7 +287,6 @@ class top:
         s.y=d["y"]
         s.color=d["color"]
         s.alive=d["alive"]
-        s.apifs=d["apifs"]
         s.mrd=d["mrd"]
     def calc_move_opt(s,map,map1):
         s.moveopt=[]
@@ -353,14 +354,12 @@ class dama:
         d["y"]=s.y
         d["color"]=s.color
         d["alive"]=s.alive
-        d["apifs"]=s.apifs
         return d
     def fromjson(s,d):
         s.x=d["x"]
         s.y=d["y"]
         s.color=d["color"]
         s.alive=d["alive"]
-        s.apifs=d["apifs"]
     def calc_move_opt(s,map,map1):
         s.apifs=False
         s.moveopt=[]
@@ -432,7 +431,6 @@ class pesak:
         d["y"]=s.y
         d["color"]=s.color
         d["alive"]=s.alive
-        d["mrd"]=s.mrd
         d["moved"]=s.moved
         d["justtwo"]=s.justtwo
         return d
@@ -441,7 +439,6 @@ class pesak:
         s.y=d["y"]
         s.color=d["color"]
         s.alive=d["alive"]
-        s.mrd=d["mrd"]
         s.moved=d["moved"]
         s.justtwo=d["justtwo"]
     def calc_move_opt(s,map,map1):
@@ -549,14 +546,12 @@ class lovac:
         d["y"]=s.y
         d["color"]=s.color
         d["alive"]=s.alive
-        d["apifs"]=s.apifs
         return d
     def fromjson(s,d):
         s.x=d["x"]
         s.y=d["y"]
         s.color=d["color"]
         s.alive=d["alive"]
-        s.apifs=d["apifs"]
     def calc_move_opt(s,map,map1):
         s.apifs=False
         s.moveopt=[]
@@ -598,7 +593,7 @@ class lovac:
 
 from generalinfo import *
 class Button:
-    def __init__(s,x,y,text,prozor,index):
+    def __init__(s,x,y,text,prozor):
         s.x=x
         s.y=y
         s.prozor=prozor
@@ -609,23 +604,22 @@ class Button:
         s.x-=s.width/2
         s.font=pygame.font.SysFont("S",(int(textures["skakacuv"].get_height())))
         s.im=s.font.render(s.text,True,(0,0,0))
-        s.index=index
-    def genral(s,prozor,mousepos,mousestate,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside):
+    def genral(s,prozor,mousepos,mousestate,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside,info):
         
         if s.prozor==prozor:
             if button_colision(s.width,s.height,s.x,s.y,mousepos,mousestate):
                 if s.text=="Continue":
                     n="con"
-                if s.text=="New game":
+                if s.text=="Two players":
                     n="start"
                 if s.text=="vs AI":
                     n="ai"
-                prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside=functionchoose(n)
+                prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside,info=functionchoose(n)
             window.blit(s.scaledimg,(s.x,s.y))
             window.blit(textures["skakacuv"],(s.x+(s.width/14.22727272727263),s.y+(s.height/2)-(textures["skakacuv"].get_height()/2)))
             window.blit(textures["skakacb"],(s.x+s.width-(s.width/14.22727272727263)-textures["skakacb"].get_width(),s.y+(s.height/2)-(textures["skakacb"].get_height()/2)))
             window.blit(s.im,(s.x+s.width/2-s.im.get_width()/2,s.y+s.height/2-s.im.get_height()/2))
-        return prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside
+        return prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside,info
 l_buttons=[
     
     Button(WIDTH/2+EXTRAW/2,HEIGHT/5,"Continue",-1),
@@ -710,7 +704,6 @@ class king:
         d["y"]=s.y
         d["color"]=s.color
         d["alive"]=s.alive
-        d["apifs"]=s.apifs
         d["pomeranje"]=s.pomeranje
         return d
     def fromjson(s,d):
@@ -718,7 +711,6 @@ class king:
         s.y=d["y"]
         s.color=d["color"]
         s.alive=d["alive"]
-        s.apifs=d["apifs"]
         s.pomeranje=d["pomeranje"]
     def calc_move_opt(s,map,map1):
         
@@ -815,34 +807,41 @@ class king:
 
 
 
-def piececheck(map):
+def piececheck(map,goorfrom,info):
     pieces=[]
+    index1=0
     for i in range(8):
         for j in range(8):
             r=False
             if map[i][j][0]=="k":
-                pieces.append(king(j,i,map[i][j][1]))
+                pieces.append(king(j,i,map[i][j][1],index1))
                 r=True
             if map[i][j][0]=="s":
-                pieces.append(knight(j,i,map[i][j][1]))
+                pieces.append(knight(j,i,map[i][j][1],index1))
                 r=True
             if map[i][j][0]=="l":
-                pieces.append(lovac(j,i,map[i][j][1]))
+                pieces.append(lovac(j,i,map[i][j][1],index1))
                 r=True
             if map[i][j][0]=="d":
-                pieces.append(dama(j,i,map[i][j][1]))
+                pieces.append(dama(j,i,map[i][j][1],index1))
                 r=True
             if map[i][j][0]=="t":
-                pieces.append(top(j,i,map[i][j][1]))
+                pieces.append(top(j,i,map[i][j][1],index1))
                 r=True
             if map[i][j][0]=="p":
                 n=True
                 if i==1 or i==6:
                     n=False
-                pieces.append(pesak(j,i,map[i][j][1],n))
+                pieces.append(pesak(j,i,map[i][j][1],n,index1))
                 r=True
             if r:
-                pieces[-1].fromjson()
-                
-    return pieces
-pieces=piececheck(cheesboardmap)
+                index1+=1
+    for i in range(len(pieces)):
+        if goorfrom==0:
+            info["lpieces"][f"{pieces[i].index}"] = pieces[i].tojson()
+        else:
+            pieces[i].fromjson(info["lpieces"][f"{pieces[i].index}"])
+    save(info)
+    info=read()
+    return pieces,info
+pieces=[]
