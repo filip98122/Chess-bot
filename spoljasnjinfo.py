@@ -256,7 +256,7 @@ def seeifcheckmate(check,color,map,map1):
 #=======================================
 #=======================================
 class top:
-    def __init__(s,x,y,color):
+    def __init__(s,x,y,color,index):
         s.x=x
         s.y=y
         s.color=color
@@ -270,6 +270,7 @@ class top:
         s.alive=True
         s.apifs=False
         s.mrd=False
+        s.index=index
     def tojson(s):
         d={}
         d["x"]=s.x
@@ -332,7 +333,7 @@ class top:
 #=======================================
 #=======================================
 class dama:
-    def __init__(s,x,y,color):
+    def __init__(s,x,y,color,index):
         s.x=x
         s.y=y
         s.color=color
@@ -345,6 +346,7 @@ class dama:
         s.spaces=[[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0]]
         s.alive=True
         s.apifs=False
+        s.index=index
     def tojson(s):
         d={}
         d["x"]=s.x
@@ -404,7 +406,7 @@ class dama:
 
 
 class pesak:
-    def __init__(s,x,y,color,moved):
+    def __init__(s,x,y,color,moved,index):
         s.x=x
         s.y=y
         s.color=color
@@ -423,6 +425,7 @@ class pesak:
         s.moveopt=[]
         s.alive=True
         s.justtwo=False
+        s.index=index
     def tojson(s):
         d={}
         d["x"]=s.x
@@ -526,7 +529,7 @@ class pesak:
 
 
 class lovac:
-    def __init__(s,x,y,color):
+    def __init__(s,x,y,color,index):
         s.x=x
         s.y=y
         s.color=color
@@ -539,6 +542,7 @@ class lovac:
         s.spaces=[[-1,-1],[1,-1],[1,1],[-1,1]]
         s.alive=True
         s.apifs=False
+        s.index=index
     def tojson(s):
         d={}
         d["x"]=s.x
@@ -594,7 +598,7 @@ class lovac:
 
 from generalinfo import *
 class Button:
-    def __init__(s,x,y,text,prozor):
+    def __init__(s,x,y,text,prozor,index):
         s.x=x
         s.y=y
         s.prozor=prozor
@@ -605,6 +609,7 @@ class Button:
         s.x-=s.width/2
         s.font=pygame.font.SysFont("S",(int(textures["skakacuv"].get_height())))
         s.im=s.font.render(s.text,True,(0,0,0))
+        s.index=index
     def genral(s,prozor,mousepos,mousestate,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside):
         
         if s.prozor==prozor:
@@ -628,7 +633,7 @@ l_buttons=[
     Button(WIDTH/2+EXTRAW/2,HEIGHT/5*3,"vs AI",-1)
 ]
 class knight:
-    def __init__(s,x,y,color):
+    def __init__(s,x,y,color,index):
         s.x=x
         s.y=y 
         s.color=color
@@ -639,6 +644,7 @@ class knight:
         s.moveopt=[]
         s.spaces=[[1,-2],[2,-1],[2,1],[1,2],[-1,2],[-2,1],[-2,-1],[-1,-2]]
         s.alive=True
+        s.index=index
     def tojson(s):
         d={}
         d["x"]=s.x
@@ -685,7 +691,7 @@ class knight:
 
 from generalinfo import *
 class king:
-    def __init__(s,x,y,color):
+    def __init__(s,x,y,color,index):
         s.x=x
         s.y=y
         s.color=color
@@ -697,6 +703,7 @@ class king:
         s.spaces=[[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0]]
         s.alive=True
         s.pomeranje=False
+        s.index=index
     def tojson(s):
         d={}
         d["x"]=s.x
@@ -812,20 +819,30 @@ def piececheck(map):
     pieces=[]
     for i in range(8):
         for j in range(8):
+            r=False
             if map[i][j][0]=="k":
                 pieces.append(king(j,i,map[i][j][1]))
+                r=True
             if map[i][j][0]=="s":
                 pieces.append(knight(j,i,map[i][j][1]))
+                r=True
             if map[i][j][0]=="l":
                 pieces.append(lovac(j,i,map[i][j][1]))
+                r=True
             if map[i][j][0]=="d":
                 pieces.append(dama(j,i,map[i][j][1]))
+                r=True
             if map[i][j][0]=="t":
                 pieces.append(top(j,i,map[i][j][1]))
+                r=True
             if map[i][j][0]=="p":
                 n=True
                 if i==1 or i==6:
                     n=False
                 pieces.append(pesak(j,i,map[i][j][1],n))
+                r=True
+            if r:
+                pieces[-1].fromjson()
+                
     return pieces
 pieces=piececheck(cheesboardmap)

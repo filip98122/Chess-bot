@@ -310,6 +310,7 @@ while True:
             if pieces[countzapojedanjevar].alive==False:
                 del pieces[countzapojedanjevar]
                 countzapojedanjevar-=1
+            pieces[countzapojedanjevar].index=countzapojedanjevar
             countzapojedanjevar+=1
         render()
         if check:
