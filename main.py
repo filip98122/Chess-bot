@@ -6,8 +6,7 @@ def takesave(info):
     info["local"]["turn"]=turn
     info["local"]["value"]=value
     for i in range(len(pieces)):
-        asa = pieces[i].tojson()
-        info["lpieces"][f"{pieces[i].index}"]=asa
+        info["lpieces"][f"{pieces[i].index}"]=pieces[i].tojson()
     save(info)
     info=read()
     return info
@@ -95,6 +94,7 @@ top1=False
 top2=False
 top3=False
 top4=False
+allpieces=[]
 value=0
 aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
 playerside="b"
@@ -319,9 +319,9 @@ while True:
         countzapojedanjevar=0
         for i in range(len(pieces)):
             if pieces[countzapojedanjevar].alive==False:
+                info["lpieces"][f"{pieces[countzapojedanjevar].index}"]=pieces[countzapojedanjevar].tojson()
                 del pieces[countzapojedanjevar]
                 countzapojedanjevar-=1
-            pieces[countzapojedanjevar].index=countzapojedanjevar
             
             countzapojedanjevar+=1
         render()
@@ -741,7 +741,7 @@ while True:
             prozor=1
         #"""
     for i in range(len(l_buttons)):
-        prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside,info=l_buttons[i].genral(prozor,mousePos,mouseState,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside,info)
+        prozor,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside,info,allpieces=l_buttons[i].genral(prozor,mousePos,mouseState,cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,lprom,daenpassant,pieces,value,playerside,info,allpieces)
     if prozor!=-1:
         aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
     pygame.display.update()
