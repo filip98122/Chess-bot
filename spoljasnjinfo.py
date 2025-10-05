@@ -123,23 +123,28 @@ def board_judge(map,turn):
 def all_moves(color,map):
     global pieces
     a=[]
+    mousePos=pygame.mouse.get_pos()
     for i in range(pieces):
         if pieces[i].color==color:
             l=pieces[i].calc_move_opt(map,map)
             for j in range(len(l)):
                 a.append([l[j],i])
+                if cheesboardmap[pieces[i].y][pieces[i].x][0]=="p" and pieces[i].y==1 or cheesboardmap[pieces[i].y][pieces[i].x][0]=="p" and pieces[i].y==7:
+                    pass
+                    
     return a
 
-def play():
-    global cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces
+def play(cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces):
     a=all_moves(turn)
     for i in range(len(a)):
         #a[i][0][0]=Y
-        #a[i][0][0]=X
-        #a[i][1]=pieceindex
-        pieces[a[i][1]].x=a[i][0][1]
-        pieces[a[i][1]].y=a[i][0][0]
-        
+        #a[i][0][1]=X
+        #a[i][0][2]=misc
+        #a[i][1]=pieceindex exactly
+        for j in range():
+            pieces[a[i][1]].x=a[i][0][1]
+            pieces[a[i][1]].y=a[i][0][0]
+
         
 def new(over,info,p):
     go=True
@@ -230,7 +235,7 @@ def seeifcheck(color,pieces,map,takedeep):
 def space(y,x,pieces):
     index=None
     for i in range(len(pieces)):
-        if pieces[i].x==x and pieces[i].y==y:
+        if pieces[i].x==x and pieces[i].y==y and pieces[i].alive==True:
             index=i
             break
     return index    
@@ -243,7 +248,7 @@ def space(y,x,pieces):
 def seeifcheckmate(check,color,map,map1):
     verdict="n"
     for i in range(len(pieces)):
-        if pieces[i].color==color:
+        if pieces[i].color==color and pieces[i].alive==True:
             a=pieces[i].calc_move_opt(map,map1)
             if a==[]:
                 continue
@@ -422,12 +427,12 @@ class pesak:
             s.oppositecolor="c"
             s.spaces=[[0,-1]]
             s.eatopt=[[-1,-1],[1,-1]]
-            s.en_passant=[[-1,0],[1,0]]
+            s.en_passant=[[-1,-1],[1,-1]]
         else:
             s.oppositecolor="b"
             s.spaces=[[0,1]]
             s.eatopt=[[1,1],[-1,1]]
-            s.en_passant=[[-1,0],[1,0]]
+            s.en_passant=[[-1,1],[1,1]]
         s.moveopt=[]
         s.moved=moved
         s.moveopt=[]
@@ -454,17 +459,13 @@ class pesak:
             s.oppositecolor="c"
             s.spaces=[[0,-1]]
             s.eatopt=[[-1,-1],[1,-1]]
-            s.en_passant=[[-1,0],[1,0]]
+            s.en_passant=[[-1,-1],[1,-1]]
         else:
             s.oppositecolor="b"
             s.spaces=[[0,1]]
             s.eatopt=[[1,1],[-1,1]]
-            s.en_passant=[[-1,0],[1,0]]
+            s.en_passant=[[-1,1],[1,1]]
     def calc_move_opt(s,map,map1):
-        if s.color=="b":
-            s.oppositecolor="c"
-        else:
-            s.oppositecolor="b"
         s.moveopt=[]
         for i in range(len(s.spaces)):
             try:
@@ -517,23 +518,23 @@ class pesak:
             except:
                 continue
         for i in range(len(s.en_passant)):
-            if s.y+s.en_passant[i][1]>=0 and s.y+s.en_passant[i][1]<len(map):
-                if s.x+s.en_passant[i][0]>=0 and s.x+s.en_passant[i][0]<len(map[s.y+s.en_passant[i][1]]):
-                    if map[s.y+s.en_passant[i][1]][s.x+s.en_passant[i][0]][0]=="p":
-                        if map[s.y+s.en_passant[i][1]][s.x+s.en_passant[i][0]][1]==s.oppositecolor:
-                            indexa=space(s.y+s.en_passant[i][1],s.x+s.en_passant[i][0],pieces)
+            if s.y+0>=0 and s.y+0<len(map):
+                if s.x+s.en_passant[i][0]>=0 and s.x+s.en_passant[i][0]<len(map[s.y+0]):
+                    if map[s.y+0][s.x+s.en_passant[i][0]][0]=="p":
+                        if map[s.y+0][s.x+s.en_passant[i][0]][1]==s.oppositecolor:
+                            indexa=space(s.y+0,s.x+s.en_passant[i][0],pieces)
                             if pieces[indexa].justtwo:
                                 h=map
                                 h[s.y][s.x]=".."
-                                bilo=h[s.y+(s.spaces[i][1])][s.x+(s.en_passant[i][0])]
-                                h[s.y+(s.spaces[i][1])][s.x+(s.en_passant[i][0])]=f"p{s.color}"
+                                bilo=h[s.y+(0)][s.x+(s.en_passant[i][0])]
+                                h[s.y+(0)][s.x+(s.en_passant[i][0])]=f"p{s.color}"
                                 sah=seeifcheck(s.color,pieces,h,map1)
                                 h[s.y][s.x]=f"p{s.color}"
-                                h[s.y+(s.spaces[i][1])][s.x+(s.en_passant[i][0])]=bilo
+                                h[s.y+(0)][s.x+(s.en_passant[i][0])]=bilo
                                 if sah:
                                     pass
                                 else:
-                                    s.moveopt.append([s.y+s.spaces[i][1],s.x+s.en_passant[i][0],indexa])
+                                    s.moveopt.append([s.y+s.en_passant[i][1],s.x+s.en_passant[i][0],indexa])
         
         return s.moveopt
         

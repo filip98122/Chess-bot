@@ -49,7 +49,7 @@ cheesboardmap=[
 
 def ens(file_data):
     f=Fernet(keyE)
-    encrypted_data1=json.dumps(file_data).encode('utf-8')
+    encrypted_data1=json.dumps(file_data,indent=4).encode('utf-8')
     encrypted_data = f.encrypt(encrypted_data1)
     with open("info.json", "wb") as file:
         file.write(encrypted_data)

@@ -13,7 +13,7 @@ def takesave(info):
 def space(y,x):
     index=None
     for i in range(len(pieces)):
-        if pieces[i].x==x and pieces[i].y==y:
+        if pieces[i].x==x and pieces[i].y==y and pieces[i].alive==True:
             index=i
             break
     return index
@@ -26,7 +26,7 @@ def clickedspace(map,x,y):
     else:
         index=None
         for i in range(len(pieces)):
-            if pieces[i].x==x and pieces[i].y==y:
+            if pieces[i].x==x and pieces[i].y==y and pieces[i].alive==True:
                 index=i
                 break
     return index
@@ -40,7 +40,7 @@ def clickedspacezap(map,x,y):
     else:
         index=None
         for i in range(len(pieces)):
-            if pieces[i].x==x and pieces[i].y==y:
+            if pieces[i].x==x and pieces[i].y==y and pieces[i].alive==True:
                 index=i
                 break
     return index
@@ -188,7 +188,7 @@ while True:
 #En passant up
                 for i in range(len(places)):
                     if places[i][0]==int(mousePos[1]//(WIDTH/8)) and places[i][1]==int(mousePos[0]//(WIDTH/8)):
-                        if cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==0 or cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==7 or daenpassant:
+                        if cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==1 or cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==7 or daenpassant:
                             daenpassant=True
                             if turn=="b":
                                 l2=[pieces[pieceindex].x,pieces[pieceindex].y-1]
@@ -316,6 +316,8 @@ while True:
 #First click up
             except:
                 pass
+        print(seeifcheckmate(check,turn,cheesboardmap,takedeep))
+        exit()
         countzapojedanjevar=0
         for i in range(len(pieces)):
             if pieces[countzapojedanjevar].alive==False:
