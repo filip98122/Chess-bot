@@ -140,9 +140,12 @@ while True:
                         a=button_colision(textures[f"{lprom[j]}{turn}"].get_width(),textures[f"{lprom[j]}{turn}"].get_height(),WIDTH+(tilewh/2)+tilewh*j-(tilewh/8),tilewh-textures[f"{lprom[j]}{turn}"].get_height(),mousePos,mouseState)
                         if a:
                             pieces[pieceindex].alive=False
+                            cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x]=".."
                             cheesboardmap[pieces[pieceindex].y][l2[0]]=".."
                             f=f"{lprom[j]}"
                             cheesboardmap[l2[1]][l2[0]]=f"{f[0]}{turn}"
+                            for i in range(len(info["lpieces"])):
+                                pass
                             if f=="dama":
                                 pieces.append(dama(l2[0],l2[1],turn))
                             if f=="top":
@@ -151,44 +154,17 @@ while True:
                                 pieces.append(lovac(l2[0],l2[1],turn))
                             if f=="skakac":
                                 pieces.append(knight(l2[0],l2[1],turn))
-                            nemoj=False
-                            places=[]
-                            nemoj=False
-                            places=[]
-                            daenpassant=False
-                            if turn=="b":
-                                turn="c"
-                            else:
-                                turn="b"
-                            for r in range(len(pieces)):
-                                if pieces[r].color==turn:
-                                    try:
-                                        a=pieces[r].justtwo
-                                        pieces[r].justtwo=False
-                                    except:
-                                        pass
-                            pieceindex=None
-                            takedeep=copy.deepcopy(cheesboardmap)
-                            check=seeifcheck(turn,pieces,cheesboardmap,takedeep)
-                            currenttrack=[-1,-1]
-                            verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep)
-                            cheesboardmap=takedeep
-                            if verdict=="n":
-                                pass
-                            else:
-                                if verdict=="c":
-                                    prozor=2
-                                else:
-                                    prozor=1
-#En passant up
-#En passant up
-#En passant up
-#En passant up
-#En passant up
-#En passant up
+                            nemoj=True
+                            break
+#Promotion up
+#Promotion up
+#Promotion up
+#Promotion up
+#Promotion up
+#Promotion up
                 for i in range(len(places)):
                     if places[i][0]==int(mousePos[1]//(WIDTH/8)) and places[i][1]==int(mousePos[0]//(WIDTH/8)):
-                        if cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==1 or cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==7 or daenpassant:
+                        if cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==0 or cheesboardmap[pieces[pieceindex].y][pieces[pieceindex].x][0]=="p" and int(mousePos[1]//(WIDTH/8))==7 or daenpassant:
                             daenpassant=True
                             if turn=="b":
                                 l2=[pieces[pieceindex].x,pieces[pieceindex].y-1]
@@ -316,8 +292,6 @@ while True:
 #First click up
             except:
                 pass
-        print(seeifcheckmate(check,turn,cheesboardmap,takedeep))
-        exit()
         countzapojedanjevar=0
         for i in range(len(pieces)):
             if pieces[countzapojedanjevar].alive==False:
@@ -647,8 +621,10 @@ while True:
 #First click up
 #First click up
 #First click up
+
             except:
                 pass
+
         countzapojedanjevar=0
         for i in range(len(pieces)):
             if pieces[countzapojedanjevar].alive==False:

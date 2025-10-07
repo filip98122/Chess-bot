@@ -1,4 +1,17 @@
 import copy
+def clickedspace(map,x,y):
+    tilevalue=map[y][x]
+    if tilevalue=="..":
+        return None
+    if tilevalue[1]!=turn:
+        return None
+    else:
+        index=None
+        for i in range(len(pieces)):
+            if pieces[i].x==x and pieces[i].y==y and pieces[i].alive==True:
+                index=i
+                break
+    return index
 prozor=0
 def s(x,y,x1,y2):
     spaces=[[1,-2],[2,-1],[2,1],[1,2],[-1,2],[-2,1],[-2,-1],[-1,-2]]
@@ -133,7 +146,64 @@ def all_moves(color,map):
                     pass
                     
     return a
-
+def playmove(map,list,typee,pieceindex,inwhat=None):
+    dont=False
+    if typee =="k":
+        if pieces[pieceindex].pomeranje==False and (list[1]==6 or list[1]==2):
+            if list[1]==2:
+                rooki=clickedspace(cheesboardmap,0,list[0])
+                pieces[rooki].x=3
+                map[list[0]][0]=".."
+                map[list[0]][3]=f"t{turn}"
+            if list[1]==6:
+                rooki=clickedspace(cheesboardmap,7,list[0])
+                pieces[rooki].x=5
+                cheesboardmap[list[0]][7]=".."
+                cheesboardmap[list[0]][5]=f"t{turn}"
+    if typee =="p" and (list[0]==0 or list[0]==7):
+        
+        dont=True
+        pieces[pieceindex].alive=False
+        map[pieces[pieceindex].y][list[1]]=".."
+        f=inwhat
+        map[list[0]][list[1]]=f"{f[0]}{turn}"
+        if f=="dama":
+            pieces.append(dama(list[1],list[0],turn))
+        if f=="top":
+            pieces.append(top(list[1],list[0],turn))
+        if f=="lovac":
+            pieces.append(lovac(list[1],list[0],turn))
+        if f=="skakac":
+            pieces.append(knight(list[1],list[0],turn))
+        info["lpieces"][f"{pieces[-1].index}"]
+        if turn=="b":
+            turn="c"
+        else:
+            turn="b"
+        for r in range(len(pieces)):
+            if pieces[r].color==turn:
+                try:
+                    a=pieces[r].justtwo
+                    pieces[r].justtwo=False
+                except:
+                    pass
+    
+    
+    
+    #if dont==False:
+        
+    
+    takedeep=copy.deepcopy(map)
+    check=seeifcheck(turn,pieces,map,takedeep)
+    verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep)
+    cheesboardmap=takedeep
+    if verdict=="n":
+        pass
+    else:
+        if verdict=="c":
+            prozor=2
+        else:
+            prozor=1
 def play(cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces):
     a=all_moves(turn)
     for i in range(len(a)):
@@ -141,6 +211,12 @@ def play(cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,chec
         #a[i][0][1]=X
         #a[i][0][2]=misc
         #a[i][1]=pieceindex exactly
+        if turn=="b":
+            turn="c"
+        else:
+            turn="b"
+        ai=all_moves(turn)   #not actual ai, A out of i
+
         for j in range():
             pieces[a[i][1]].x=a[i][0][1]
             pieces[a[i][1]].y=a[i][0][0]
@@ -888,7 +964,14 @@ def piececheck(map,goorfrom,info):
                 index1+=1
                 
                 
-
+    countzapojedanjevar=0
+    for i in range(len(pieces)):
+        if pieces[countzapojedanjevar].alive==False:
+            info["lpieces"][f"{pieces[countzapojedanjevar].index}"]=pieces[countzapojedanjevar].tojson()
+            del pieces[countzapojedanjevar]
+            countzapojedanjevar-=1
+        
+        countzapojedanjevar+=1
     save(info)
     info=read()
     return pieces,info
