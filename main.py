@@ -176,7 +176,8 @@ while True:
                             try:
                                 pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
                                 pieces[pojedena].alive=False
-                                pieces[pojedena].mrd=True
+                                if cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))][0]=="t":
+                                    pieces[pojedena].mrd=True
                             except:
                                 pass
                             try:

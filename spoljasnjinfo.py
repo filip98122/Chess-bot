@@ -12,6 +12,20 @@ def clickedspace(map,x,y):
                 index=i
                 break
     return index
+
+def clickedspacezap(map,x,y):
+    tilevalue=map[y][x]
+    if tilevalue=="..":
+        return None
+    if tilevalue[1]==turn:
+        return None
+    else:
+        index=None
+        for i in range(len(pieces)):
+            if pieces[i].x==x and pieces[i].y==y and pieces[i].alive==True:
+                index=i
+                break
+    return index
 prozor=0
 def s(x,y,x1,y2):
     spaces=[[1,-2],[2,-1],[2,1],[1,2],[-1,2],[-2,1],[-2,-1],[-1,-2]]
@@ -149,6 +163,7 @@ def all_moves(color,map):
 def playmove(map,list,typee,pieceindex,inwhat=None):
     dont=False
     if typee =="k":
+        pieces[pieceindex].pomeranje=True
         if pieces[pieceindex].pomeranje==False and (list[1]==6 or list[1]==2):
             if list[1]==2:
                 rooki=clickedspace(cheesboardmap,0,list[0])
@@ -161,7 +176,6 @@ def playmove(map,list,typee,pieceindex,inwhat=None):
                 cheesboardmap[list[0]][7]=".."
                 cheesboardmap[list[0]][5]=f"t{turn}"
     if typee =="p" and (list[0]==0 or list[0]==7):
-        
         dont=True
         pieces[pieceindex].alive=False
         map[pieces[pieceindex].y][list[1]]=".."
@@ -176,27 +190,54 @@ def playmove(map,list,typee,pieceindex,inwhat=None):
         if f=="skakac":
             pieces.append(knight(list[1],list[0],turn))
         info["lpieces"][f"{pieces[-1].index}"]
-        if turn=="b":
-            turn="c"
-        else:
-            turn="b"
-        for r in range(len(pieces)):
-            if pieces[r].color==turn:
-                try:
-                    a=pieces[r].justtwo
-                    pieces[r].justtwo=False
-                except:
-                    pass
+    if len(list)==3:
+        pieces[list[2]].alive=False
+        map[pieces[list[2]].y][pieces[list[2]].x]=".."
     
-    
-    
-    #if dont==False:
-        
-    
-    takedeep=copy.deepcopy(map)
-    check=seeifcheck(turn,pieces,map,takedeep)
+    if typee=="t":
+        pieces[pieceindex].mrd=True
+    if typee=="p":
+        if pieces[pieceindex].moved==False:
+            if turn=="b":
+                if pieces[pieceindex].y==6:
+                    pieces[pieceindex].justtwo=True
+            else:
+                if pieces[pieceindex].y==1:
+                    pieces[pieceindex].justtwo=True
+        pieces[pieceindex].moved=True
+    if dont==False:
+        if map[list[0]][list[1]]!="..":
+            dead=clickedspacezap(map,list[1],list[0])
+            pieces[dead].alive=False
+            if pieces[list[0]][list[1]]=="t":
+                pieces[dead].mrd=True
+        map[pieces[pieceindex].y][pieces[pieceindex].x]=".."
+        pieces[pieceindex].x=list[1]
+        pieces[pieceindex].y=list[0]
+        map[pieces[pieceindex].y][pieces[pieceindex].x]=f"{typee}{turn}"
+        #Nemoj below
+    nemoj=False
+    places=[]
+    daenpassant=False
+    if turn=="b":
+        turn="c"
+    else:
+        turn="b"
+    for i in range(len(pieces)):
+        if pieces[i].color==turn:
+            try:
+                a=pieces[i].justtwo
+                pieces[i].justtwo=False
+            except:
+                pass
+    pieceindex=None
+    takedeep=copy.deepcopy(cheesboardmap)
+    check=seeifcheck(turn,pieces,cheesboardmap,takedeep)
+    currenttrack=[-1,-1]
     verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep)
     cheesboardmap=takedeep
+    value=board_judge(cheesboardmap,turn)
+    aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
     if verdict=="n":
         pass
     else:
@@ -204,6 +245,66 @@ def playmove(map,list,typee,pieceindex,inwhat=None):
             prozor=2
         else:
             prozor=1
+    #Expanded stalemate
+        #"""
+        color="b"
+        piecescheck=[]
+        verdictp=False
+        gobreak=False
+        lovac1=False
+        skakac1=False
+        lovac2=False
+        for i in range(8):
+            for j in range(8):
+                if cheesboardmap[i][j][1]==color:
+                    if cheesboardmap[i][j][0]=="d" or cheesboardmap[i][j][0]=="t" or cheesboardmap[i][j][0]=="p":
+                        verdictp=True
+                        gobreak=True
+                        break
+                    if cheesboardmap[i][j][0]=="l":
+                        if lovac1:
+                            verdictp=True
+                            gobreak=True
+                            break
+                        lovac1=True
+                        if lovac1 and skakac1:
+                            verdictp=True
+                            gobreak=True
+                            break
+                    piecescheck.append(cheesboardmap[i][j][0])
+            if gobreak:
+                break
+    color="c"
+    piecescheck=[]
+    gobreak=False
+    lovac1=False
+    skakac1=False
+    lovac2=False
+    for i in range(8):
+        for j in range(8):
+            if cheesboardmap[i][j][1]==color:
+                if cheesboardmap[i][j][0]=="d" or cheesboardmap[i][j][0]=="t" or cheesboardmap[i][j][0]=="p":
+                    verdictp=True
+                    gobreak=True
+                    break
+                if cheesboardmap[i][j][0]=="l":
+                    if lovac1:
+                        verdictp=True
+                        gobreak=True
+                        break
+                    lovac1=True
+                    if lovac1 and skakac1:
+                        verdictp=True
+                        gobreak=True
+                        break
+                piecescheck.append(cheesboardmap[i][j][0])
+        if gobreak:
+            break
+    if verdictp:
+        pass
+    else:
+        prozor=1
+    #"""
 def play(cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces):
     a=all_moves(turn)
     for i in range(len(a)):
@@ -846,68 +947,70 @@ class king:
             except:
                 continue
         if s.pomeranje==False:
-            if map[s.y][s.x+1]==".." and map[s.y][s.x+2]=="..":
-                o=space(s.y,s.x+3,pieces)
-                cnt=False
-                if o==None:
-                    pass
-                else:
-                    try:
-                        if pieces[o].mrd==False:
-                            cnt=True
-                    except:
+            sah=seeifcheck(s.color,pieces,map,map1)
+            if sah==False:
+                if map[s.y][s.x+1]==".." and map[s.y][s.x+2]=="..":
+                    o=space(s.y,s.x+3,pieces)
+                    cnt=False
+                    if o==None:
                         pass
-                    if cnt:
-                        if check!=True:
-                            
-                            h=map1
-                            h[s.y][s.x]=".."
-                            bilo=h[s.y][s.x+1]
-                            h[s.y][s.x+1]=f"k{s.color}"
-                            sah=seeifcheck(s.color,pieces,h,map1)
-                            h[s.y][s.x]=f"k{s.color}"
-                            h[s.y][s.x+1]=bilo
-                            
-                            h=map1
-                            h[s.y][s.x]=".."
-                            bilo=h[s.y][s.x+2]
-                            h[s.y][s.x+2]=f"k{s.color}"
-                            sah1=seeifcheck(s.color,pieces,h,map1)
-                            h[s.y][s.x]=f"k{s.color}"
-                            h[s.y][s.x+2]=bilo
-                            if sah==False and sah1==False:
-                                s.moveopt.append([s.y,s.x+2])
-            if map[s.y][s.x-1]==".." and map[s.y][s.x-2]==".." and map[s.y][s.x-3]=="..":
-                o=space(s.y,s.x-4,pieces)
-                cnt=False
-                if o==None:
-                    pass
-                else:
-                    try:
-                        if pieces[o].mrd==False:
-                            cnt=True
-                    except:
+                    else:
+                        try:
+                            if pieces[o].mrd==False:
+                                cnt=True
+                        except:
+                            pass
+                        if cnt:
+                            if check!=True:
+                                
+                                h=map1
+                                h[s.y][s.x]=".."
+                                bilo=h[s.y][s.x+1]
+                                h[s.y][s.x+1]=f"k{s.color}"
+                                sah=seeifcheck(s.color,pieces,h,map1)
+                                h[s.y][s.x]=f"k{s.color}"
+                                h[s.y][s.x+1]=bilo
+                                
+                                h=map1
+                                h[s.y][s.x]=".."
+                                bilo=h[s.y][s.x+2]
+                                h[s.y][s.x+2]=f"k{s.color}"
+                                sah1=seeifcheck(s.color,pieces,h,map1)
+                                h[s.y][s.x]=f"k{s.color}"
+                                h[s.y][s.x+2]=bilo
+                                if sah==False and sah1==False:
+                                    s.moveopt.append([s.y,s.x+2])
+                if map[s.y][s.x-1]==".." and map[s.y][s.x-2]==".." and map[s.y][s.x-3]=="..":
+                    o=space(s.y,s.x-4,pieces)
+                    cnt=False
+                    if o==None:
                         pass
-                    if cnt:
-                        if check!=True:
-                            
-                            h=map1
-                            h[s.y][s.x]=".."
-                            bilo=h[s.y][s.x-1]
-                            h[s.y][s.x-1]=f"k{s.color}"
-                            sah=seeifcheck(s.color,pieces,h,map1)
-                            h[s.y][s.x]=f"k{s.color}"
-                            h[s.y][s.x-1]=bilo
-                            
-                            h=map1
-                            h[s.y][s.x]=".."
-                            bilo=h[s.y][s.x-2]
-                            h[s.y][s.x-2]=f"k{s.color}"
-                            sah1=seeifcheck(s.color,pieces,h,map1)
-                            h[s.y][s.x]=f"k{s.color}"
-                            h[s.y][s.x-2]=bilo
-                            if sah==False and sah1==False:
-                                s.moveopt.append([s.y,s.x-2])
+                    else:
+                        try:
+                            if pieces[o].mrd==False:
+                                cnt=True
+                        except:
+                            pass
+                        if cnt:
+                            if check!=True:
+                                
+                                h=map1
+                                h[s.y][s.x]=".."
+                                bilo=h[s.y][s.x-1]
+                                h[s.y][s.x-1]=f"k{s.color}"
+                                sah=seeifcheck(s.color,pieces,h,map1)
+                                h[s.y][s.x]=f"k{s.color}"
+                                h[s.y][s.x-1]=bilo
+                                
+                                h=map1
+                                h[s.y][s.x]=".."
+                                bilo=h[s.y][s.x-2]
+                                h[s.y][s.x-2]=f"k{s.color}"
+                                sah1=seeifcheck(s.color,pieces,h,map1)
+                                h[s.y][s.x]=f"k{s.color}"
+                                h[s.y][s.x-2]=bilo
+                                if sah==False and sah1==False:
+                                    s.moveopt.append([s.y,s.x-2])
         return s.moveopt
 
 
