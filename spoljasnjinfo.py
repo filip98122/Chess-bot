@@ -112,9 +112,9 @@ def weightadder(color,weight,added):
     return weight
 
 def board_judge(map,turn):
-    pawn=[1,1.1,2,3.6,5.4,8.5]
+    pawn=0.045
     weight=0
-    skakac=0.0125
+    skakac1=0.0125
     bishop=0.0013
     queen= 0.0006
     rook=  0.0012
@@ -122,14 +122,13 @@ def board_judge(map,turn):
     for i in range(8):
         for j in range(8):
             if map[i][j][0]=="p":
-                if map[i][j][1]=="c":
-                    weight-=pawn[i-1]
-                else:
-                    weight+=pawn[6-i]
-            if map[i][j][0]=="s":
-                subj=knight(j,i,map[i][j][1],-1)
+                subj=pesak(j,i,map[i][j][1],False,-1)
                 a=subj.calc_move_opt(map,map)
-                weight=weightadder(map[i][j][1],weight,len(a)*skakac+3)
+                weight=weightadder(map[i][j][1],weight,len(a)*pawn+1)
+            if map[i][j][0]=="s":
+                subj=skakac(j,i,map[i][j][1],-1)
+                a=subj.calc_move_opt(map,map)
+                weight=weightadder(map[i][j][1],weight,len(a)*skakac1+3)
             if map[i][j][0]=="l":
                 subj=lovac(j,i,map[i][j][1],-1)
                 a=subj.calc_move_opt(map,map)
@@ -150,71 +149,87 @@ def board_judge(map,turn):
 def all_moves(color,map):
     global pieces
     a=[]
+    lpromotion=["dama","top","lovac","skakac"]
     mousePos=pygame.mouse.get_pos()
-    for i in range(pieces):
+    for i in range(len(pieces)):
         if pieces[i].color==color:
             l=pieces[i].calc_move_opt(map,map)
             for j in range(len(l)):
-                a.append([l[j],i])
-                if cheesboardmap[pieces[i].y][pieces[i].x][0]=="p" and pieces[i].y==1 or cheesboardmap[pieces[i].y][pieces[i].x][0]=="p" and pieces[i].y==7:
-                    pass
+                if cheesboardmap[pieces[i].y][pieces[i].x][0]=="p" and pieces[i].y==0 or cheesboardmap[pieces[i].y][pieces[i].x][0]=="p" and pieces[i].y==7:
+                    for r in range(4):
+                        a.append([l[j],i,lpromotion[r]])
+                else:
+                    a.append([l[j],i])
                     
     return a
-def playmove(map,list,typee,pieceindex,inwhat=None):
+def playmove(map,list,typee,pieceindex,turn,inwhat=None):
     dont=False
-    if typee =="k":
-        pieces[pieceindex].pomeranje=True
-        if pieces[pieceindex].pomeranje==False and (list[1]==6 or list[1]==2):
-            if list[1]==2:
-                rooki=clickedspace(cheesboardmap,0,list[0])
-                pieces[rooki].x=3
-                map[list[0]][0]=".."
-                map[list[0]][3]=f"t{turn}"
-            if list[1]==6:
-                rooki=clickedspace(cheesboardmap,7,list[0])
-                pieces[rooki].x=5
-                cheesboardmap[list[0]][7]=".."
-                cheesboardmap[list[0]][5]=f"t{turn}"
-    if typee =="p" and (list[0]==0 or list[0]==7):
-        dont=True
-        pieces[pieceindex].alive=False
-        map[pieces[pieceindex].y][list[1]]=".."
-        f=inwhat
-        map[list[0]][list[1]]=f"{f[0]}{turn}"
-        if f=="dama":
-            pieces.append(dama(list[1],list[0],turn))
-        if f=="top":
-            pieces.append(top(list[1],list[0],turn))
-        if f=="lovac":
-            pieces.append(lovac(list[1],list[0],turn))
-        if f=="skakac":
-            pieces.append(knight(list[1],list[0],turn))
-        info["lpieces"][f"{pieces[-1].index}"]
+    try:
+        if typee =="k":
+            pieces[pieceindex].pomeranje=True
+            if pieces[pieceindex].pomeranje==False and (list[1]==6 or list[1]==2):
+                if list[1]==2:
+                    rooki=clickedspace(map,0,list[0])
+                    pieces[rooki].x=3
+                    map[list[0]][0]=".."
+                    map[list[0]][3]=f"t{turn}"
+                if list[1]==6:
+                    rooki=clickedspace(map,7,list[0])
+                    pieces[rooki].x=5
+                    map[list[0]][7]=".."
+                    map[list[0]][5]=f"t{turn}"
+    except:
+        pass
+    try:
+        if typee =="p" and (list[0]==0 or list[0]==7):
+            dont=True
+            pieces[pieceindex].alive=False
+            map[pieces[pieceindex].y][list[1]]=".."
+            f=inwhat
+            map[list[0]][list[1]]=f"{f[0]}{turn}"
+            if f=="dama":
+                pieces.append(dama(list[1],list[0],turn))
+            if f=="top":
+                pieces.append(top(list[1],list[0],turn))
+            if f=="lovac":
+                pieces.append(lovac(list[1],list[0],turn))
+            if f=="skakac":
+                pieces.append(skakac(list[1],list[0],turn))
+            info["lpieces"][f"{pieces[-1].index}"]
+    except:
+        pass
     if len(list)==3:
         pieces[list[2]].alive=False
         map[pieces[list[2]].y][pieces[list[2]].x]=".."
-    
-    if typee=="t":
-        pieces[pieceindex].mrd=True
-    if typee=="p":
-        if pieces[pieceindex].moved==False:
-            if turn=="b":
-                if pieces[pieceindex].y==6:
-                    pieces[pieceindex].justtwo=True
-            else:
-                if pieces[pieceindex].y==1:
-                    pieces[pieceindex].justtwo=True
-        pieces[pieceindex].moved=True
+    try:
+        if typee=="t":
+            pieces[pieceindex].mrd=True
+    except:
+        pass
+    try:
+        if typee=="p":
+            if pieces[pieceindex].moved==False:
+                if turn=="b":
+                    if pieces[pieceindex].y==6:
+                        pieces[pieceindex].justtwo=True
+                else:
+                    if pieces[pieceindex].y==1:
+                        pieces[pieceindex].justtwo=True
+            pieces[pieceindex].moved=True
+    except:
+        pass
     if dont==False:
-        if map[list[0]][list[1]]!="..":
+        if map[list[0]][list[1]]!=".." and map[list[0]][list[1]][1]!=turn:
             dead=clickedspacezap(map,list[1],list[0])
             pieces[dead].alive=False
-            if pieces[list[0]][list[1]]=="t":
+            if map[list[0]][list[1]]=="t":
                 pieces[dead].mrd=True
+        
+
+        map[list[0]][list[1]]=map[pieces[pieceindex].y][pieces[pieceindex].x]
         map[pieces[pieceindex].y][pieces[pieceindex].x]=".."
         pieces[pieceindex].x=list[1]
         pieces[pieceindex].y=list[0]
-        map[pieces[pieceindex].y][pieces[pieceindex].x]=f"{typee}{turn}"
         #Nemoj below
     nemoj=False
     places=[]
@@ -231,12 +246,12 @@ def playmove(map,list,typee,pieceindex,inwhat=None):
             except:
                 pass
     pieceindex=None
-    takedeep=copy.deepcopy(cheesboardmap)
-    check=seeifcheck(turn,pieces,cheesboardmap,takedeep)
+    takedeep=copy.deepcopy(map)
+    check=seeifcheck(turn,pieces,map,takedeep)
     currenttrack=[-1,-1]
-    verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep)
-    cheesboardmap=takedeep
-    value=board_judge(cheesboardmap,turn)
+    verdict=seeifcheckmate(check,turn,map,takedeep)
+    map=takedeep
+    value=board_judge(map,turn)
     aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
     if verdict=="n":
         pass
@@ -256,12 +271,12 @@ def playmove(map,list,typee,pieceindex,inwhat=None):
         lovac2=False
         for i in range(8):
             for j in range(8):
-                if cheesboardmap[i][j][1]==color:
-                    if cheesboardmap[i][j][0]=="d" or cheesboardmap[i][j][0]=="t" or cheesboardmap[i][j][0]=="p":
+                if map[i][j][1]==color:
+                    if map[i][j][0]=="d" or map[i][j][0]=="t" or map[i][j][0]=="p":
                         verdictp=True
                         gobreak=True
                         break
-                    if cheesboardmap[i][j][0]=="l":
+                    if map[i][j][0]=="l":
                         if lovac1:
                             verdictp=True
                             gobreak=True
@@ -271,7 +286,7 @@ def playmove(map,list,typee,pieceindex,inwhat=None):
                             verdictp=True
                             gobreak=True
                             break
-                    piecescheck.append(cheesboardmap[i][j][0])
+                    piecescheck.append(map[i][j][0])
             if gobreak:
                 break
     color="c"
@@ -282,12 +297,12 @@ def playmove(map,list,typee,pieceindex,inwhat=None):
     lovac2=False
     for i in range(8):
         for j in range(8):
-            if cheesboardmap[i][j][1]==color:
-                if cheesboardmap[i][j][0]=="d" or cheesboardmap[i][j][0]=="t" or cheesboardmap[i][j][0]=="p":
+            if map[i][j][1]==color:
+                if map[i][j][0]=="d" or map[i][j][0]=="t" or map[i][j][0]=="p":
                     verdictp=True
                     gobreak=True
                     break
-                if cheesboardmap[i][j][0]=="l":
+                if map[i][j][0]=="l":
                     if lovac1:
                         verdictp=True
                         gobreak=True
@@ -297,7 +312,7 @@ def playmove(map,list,typee,pieceindex,inwhat=None):
                         verdictp=True
                         gobreak=True
                         break
-                piecescheck.append(cheesboardmap[i][j][0])
+                piecescheck.append(map[i][j][0])
         if gobreak:
             break
     if verdictp:
@@ -305,24 +320,63 @@ def playmove(map,list,typee,pieceindex,inwhat=None):
     else:
         prozor=1
     #"""
+    return map,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,daenpassant,pieces,value
 def play(cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces):
-    a=all_moves(turn)
+    mapsaved=copy.deepcopy(cheesboardmap)
+    a=all_moves(turn,cheesboardmap)
+    lmoves=[]
+    typeee="."
     for i in range(len(a)):
         #a[i][0][0]=Y
         #a[i][0][1]=X
         #a[i][0][2]=misc
         #a[i][1]=pieceindex exactly
-        if turn=="b":
-            turn="c"
-        else:
-            turn="b"
-        ai=all_moves(turn)   #not actual ai, A out of i
-
-        for j in range():
-            pieces[a[i][1]].x=a[i][0][1]
-            pieces[a[i][1]].y=a[i][0][0]
-
+        cheesboardmapq=copy.deepcopy(cheesboardmap)
+        typeee=type(pieces[a[i][1]]).__name__
+        typeee=typeee[0]
+        cheesboard1,turn1,nemoj1,places1,da1,currenttrack1,takedeep1,check1,sa1da1,daenpassant1,pieces1,value1=playmove(cheesboardmapq,[a[i][0][0],a[i][0][1]],typeee,a[i][1],turn,a[i][-1])#map,list,typee,pieceindex,turn,inwhat=None
         
+        ai=all_moves(turn1,cheesboardmap)   #not actual ai, A out of i
+        for j in range(len(ai)):
+            cheesboardmap1=copy.deepcopy(cheesboard1)
+            typeee=type(pieces[ai[j][1]]).__name__
+            typeee=typeee[0]
+            cheesboardmap2,turn2,nemoj2,places2,da2,currenttrack2,takedeep2,check2,sa1da2,daenpassant2,pieces2,value2=playmove(cheesboardmap1,[ai[j][0][0],ai[j][0][1]],typeee,ai[j][1],turn1,ai[j][-1])
+            lmoves.append([value2,i])
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    lmoves.sort()
+    cheesboardmap=copy.deepcopy(mapsaved)
+    typeee=type(pieces[a[lmoves[-1][1]][1]]).__name__
+    typeee=typeee[0]
+    if playerside=="b":
+        i=lmoves[-1][1]
+        cheesboard,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,daenpassant,pieces,value=playmove(cheesboardmap,[a[i][0][0],a[i][0][1]],typeee,a[i][1],turn,a[i][-1])
+    else:
+        i=lmoves[0][1]
+        cheesboard,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,daenpassant,pieces,value=playmove(cheesboardmap,[a[i][0][0],a[i][0][1]],typeee,a[i][1],turn,a[i][-1])
+    return cheesboard,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces
 def new(over,info,p):
     go=True
     if info["local"]["cheesboardmap"]==0:
@@ -409,7 +463,7 @@ def seeifcheck(color,pieces,map,takedeep):
                 
                         
                 
-def space(y,x,pieces):
+def space(y,x,pieces,map):
     index=None
     for i in range(len(pieces)):
         if pieces[i].x==x and pieces[i].y==y and pieces[i].alive==True:
@@ -697,9 +751,9 @@ class pesak:
         for i in range(len(s.en_passant)):
             if s.y+0>=0 and s.y+0<len(map):
                 if s.x+s.en_passant[i][0]>=0 and s.x+s.en_passant[i][0]<len(map[s.y+0]):
-                    if map[s.y+0][s.x+s.en_passant[i][0]][0]=="p":
+                    if map[s.y+0][s.x+s.en_passant[i][0]][0]=="p" and map[s.y+0][s.x+s.en_passant[i][0]][1]==s.oppositecolor:
                         if map[s.y+0][s.x+s.en_passant[i][0]][1]==s.oppositecolor:
-                            indexa=space(s.y+0,s.x+s.en_passant[i][0],pieces)
+                            indexa=space(s.y+0,s.x+s.en_passant[i][0],pieces,map)
                             if pieces[indexa].justtwo:
                                 h=map
                                 h[s.y][s.x]=".."
@@ -831,7 +885,7 @@ l_buttons=[
     Button(WIDTH/2+EXTRAW/2,HEIGHT/5*2,"Two players",-1),
     Button(WIDTH/2+EXTRAW/2,HEIGHT/5*3,"vs AI",-1)
 ]
-class knight:
+class skakac:
     def __init__(s,x,y,color,index):
         s.x=x
         s.y=y 
@@ -950,7 +1004,7 @@ class king:
             sah=seeifcheck(s.color,pieces,map,map1)
             if sah==False:
                 if map[s.y][s.x+1]==".." and map[s.y][s.x+2]=="..":
-                    o=space(s.y,s.x+3,pieces)
+                    o=space(s.y,s.x+3,pieces,map)
                     cnt=False
                     if o==None:
                         pass
@@ -981,7 +1035,7 @@ class king:
                                 if sah==False and sah1==False:
                                     s.moveopt.append([s.y,s.x+2])
                 if map[s.y][s.x-1]==".." and map[s.y][s.x-2]==".." and map[s.y][s.x-3]=="..":
-                    o=space(s.y,s.x-4,pieces)
+                    o=space(s.y,s.x-4,pieces,map)
                     cnt=False
                     if o==None:
                         pass
@@ -1042,7 +1096,7 @@ def piececheck(map,goorfrom,info):
                 pieces.append(king(j,i,map[i][j][1],index1))
                 r=True
             if map1[i][j][0]=="s":
-                pieces.append(knight(j,i,map[i][j][1],index1))
+                pieces.append(skakac(j,i,map[i][j][1],index1))
                 r=True
             if map1[i][j][0]=="l":
                 pieces.append(lovac(j,i,map[i][j][1],index1))

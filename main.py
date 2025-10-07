@@ -153,7 +153,7 @@ while True:
                             if f=="lovac":
                                 pieces.append(lovac(l2[0],l2[1],turn))
                             if f=="skakac":
-                                pieces.append(knight(l2[0],l2[1],turn))
+                                pieces.append(skakac(l2[0],l2[1],turn))
                             nemoj=True
                             break
 #Promotion up
@@ -458,7 +458,7 @@ while True:
                             if f=="lovac":
                                 pieces.append(lovac(l2[0],l2[1],turn))
                             if f=="skakac":
-                                pieces.append(knight(l2[0],l2[1],turn))
+                                pieces.append(skakac(l2[0],l2[1],turn))
                             nemoj=False
                             places=[]
                             nemoj=False
@@ -625,7 +625,8 @@ while True:
 
             except:
                 pass
-
+        if turn!=playerside:
+            cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces=play(cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces)
         countzapojedanjevar=0
         for i in range(len(pieces)):
             if pieces[countzapojedanjevar].alive==False:
