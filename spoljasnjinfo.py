@@ -111,7 +111,7 @@ def weightadder(color,weight,added):
         weight+=added
     return weight
 
-def board_judge(map,turn):
+def board_judge(map,turn,pieces):
     pawn=0.045
     weight=0
     skakac1=0.0125
@@ -123,37 +123,36 @@ def board_judge(map,turn):
         for j in range(8):
             if map[i][j][0]=="p":
                 subj=pesak(j,i,map[i][j][1],False,-1)
-                a=subj.calc_move_opt(map,map)
+                a=subj.calc_move_opt(map,map,pieces)
                 weight=weightadder(map[i][j][1],weight,len(a)*pawn+1)
             if map[i][j][0]=="s":
                 subj=skakac(j,i,map[i][j][1],-1)
-                a=subj.calc_move_opt(map,map)
+                a=subj.calc_move_opt(map,map,pieces)
                 weight=weightadder(map[i][j][1],weight,len(a)*skakac1+3)
             if map[i][j][0]=="l":
                 subj=lovac(j,i,map[i][j][1],-1)
-                a=subj.calc_move_opt(map,map)
+                a=subj.calc_move_opt(map,map,pieces)
                 weight=weightadder(map[i][j][1],weight,len(a)*bishop+3)
             if map[i][j][0]=="d":
                 subj=dama(j,i,map[i][j][1],-1)
-                a=subj.calc_move_opt(map,map)
+                a=subj.calc_move_opt(map,map,pieces)
                 weight=weightadder(map[i][j][1],weight,len(a)*queen+9.5)
             if map[i][j][0]=="t":
                 subj=top(j,i,map[i][j][1],-1)
-                a=subj.calc_move_opt(map,map)
+                a=subj.calc_move_opt(map,map,pieces)
                 weight=weightadder(map[i][j][1],weight,len(a)*rook+5)
             
                 
     return weight
 
 
-def all_moves(color,map):
-    global pieces
+def all_moves(color,map,pieces):
     a=[]
     lpromotion=["dama","top","lovac","skakac"]
     mousePos=pygame.mouse.get_pos()
     for i in range(len(pieces)):
         if pieces[i].color==color:
-            l=pieces[i].calc_move_opt(map,map)
+            l=pieces[i].calc_move_opt(map,map,pieces)
             for j in range(len(l)):
                 if cheesboardmap[pieces[i].y][pieces[i].x][0]=="p" and pieces[i].y==0 or cheesboardmap[pieces[i].y][pieces[i].x][0]=="p" and pieces[i].y==7:
                     for r in range(4):
@@ -249,7 +248,7 @@ def playmove(map,list,typee,pieceindex,turn,pieces,inwhat=None):
     takedeep=copy.deepcopy(map)
     check=seeifcheck(turn,pieces,map,takedeep)
     currenttrack=[-1,-1]
-    verdict=seeifcheckmate(check,turn,map,takedeep)
+    verdict=seeifcheckmate(check,turn,map,takedeep,pieces)
     map=takedeep
     value=board_judge(map,turn)
     aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
@@ -324,7 +323,7 @@ def playmove(map,list,typee,pieceindex,turn,pieces,inwhat=None):
 def play(cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces):
     mapsaved=copy.deepcopy(cheesboardmap)
     piecessaved=copy.deepcopy(pieces)
-    a=all_moves(turn,cheesboardmap)
+    a=all_moves(turn,cheesboardmap,pieces)
     lmoves=[]
     typeee="."
     for i in range(len(a)):
@@ -338,7 +337,7 @@ def play(cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,chec
         piecessaved=copy.deepcopy(pieces)
         cheesboard1,turn1,nemoj1,places1,da1,currenttrack1,takedeep1,check1,sa1da1,daenpassant1,pieces1,value1=playmove(cheesboardmapq,[a[i][0][0],a[i][0][1]],typeee,a[i][1],turn,piecessaved,a[i][-1])#map,list,typee,pieceindex,turn,inwhat=None
         
-        ai=all_moves(turn1,cheesboardmap)   #not actual ai, A out of i
+        ai=all_moves(turn1,cheesboardmap,pieces)   #not actual ai, A out of i
         for j in range(len(ai)):
             cheesboardmap1=copy.deepcopy(cheesboard1)
             typeee=type(pieces[ai[j][1]]).__name__
@@ -479,11 +478,11 @@ def space(y,x,pieces,map):
 
 
     
-def seeifcheckmate(check,color,map,map1):
+def seeifcheckmate(check,color,map,map1,pieces):
     verdict="n"
     for i in range(len(pieces)):
         if pieces[i].color==color and pieces[i].alive==True:
-            a=pieces[i].calc_move_opt(map,map1)
+            a=pieces[i].calc_move_opt(map,map1,pieces)
             if a==[]:
                 continue
             else:
@@ -528,7 +527,7 @@ class top:
         s.color=d["color"]
         s.alive=d["alive"]
         s.mrd=d["mrd"]
-    def calc_move_opt(s,map,map1):
+    def calc_move_opt(s,map,map1,pieces):
         if s.color=="b":
             s.oppositecolor="c"
         else:
@@ -604,7 +603,7 @@ class dama:
         s.y=d["y"]
         s.color=d["color"]
         s.alive=d["alive"]
-    def calc_move_opt(s,map,map1):
+    def calc_move_opt(s,map,map1,pieces):
         if s.color=="b":
             s.oppositecolor="c"
         else:
@@ -699,7 +698,7 @@ class pesak:
             s.spaces=[[0,1]]
             s.eatopt=[[1,1],[-1,1]]
             s.en_passant=[[-1,1],[1,1]]
-    def calc_move_opt(s,map,map1,):
+    def calc_move_opt(s,map,map1,pieces):
         s.moveopt=[]
         for i in range(len(s.spaces)):
             try:
@@ -810,7 +809,7 @@ class lovac:
         s.y=d["y"]
         s.color=d["color"]
         s.alive=d["alive"]
-    def calc_move_opt(s,map,map1):
+    def calc_move_opt(s,map,map1,pieces):
         if s.color=="b":
             s.oppositecolor="c"
         else:
@@ -913,7 +912,7 @@ class skakac:
         s.y=d["y"]
         s.color=d["color"]
         s.alive=d["alive"]
-    def calc_move_opt(s,map,map1):
+    def calc_move_opt(s,map,map1,pieces):
         if s.color=="b":
             s.oppositecolor="c"
         else:
@@ -978,7 +977,7 @@ class king:
         s.color=d["color"]
         s.alive=d["alive"]
         s.pomeranje=d["pomeranje"]
-    def calc_move_opt(s,map,map1):
+    def calc_move_opt(s,map,map1,pieces):
         if s.color=="b":
             s.oppositecolor="c"
         else:

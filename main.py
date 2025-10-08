@@ -254,7 +254,7 @@ while True:
                     takedeep=copy.deepcopy(cheesboardmap)
                     check=seeifcheck(turn,pieces,cheesboardmap,takedeep)
                     currenttrack=[-1,-1]
-                    verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep)
+                    verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep,pieces)
                     cheesboardmap=takedeep
                     value=board_judge(cheesboardmap,turn)
                     aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
@@ -280,7 +280,7 @@ while True:
                         daenpassant=False
                         places=[]
                         pieceindex=clickedspace(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
-                        places=pieces[pieceindex].calc_move_opt(cheesboardmap,takedeep)
+                        places=pieces[pieceindex].calc_move_opt(cheesboardmap,takedeep,pieces)
                         currenttrack=[pieces[pieceindex].x,pieces[pieceindex].y]
                         cheesboardmap=takedeep
                         takedeep=copy.deepcopy(cheesboardmap)
@@ -479,7 +479,7 @@ while True:
                             takedeep=copy.deepcopy(cheesboardmap)
                             check=seeifcheck(turn,pieces,cheesboardmap,takedeep)
                             currenttrack=[-1,-1]
-                            verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep)
+                            verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep,pieces)
                             cheesboardmap=takedeep
                             if verdict=="n":
                                 pass
@@ -585,7 +585,7 @@ while True:
                     takedeep=copy.deepcopy(cheesboardmap)
                     check=seeifcheck(turn,pieces,cheesboardmap,takedeep)
                     currenttrack=[-1,-1]
-                    verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep)
+                    verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep,pieces)
                     cheesboardmap=takedeep
                     value=board_judge(cheesboardmap,turn)
                     aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
@@ -611,7 +611,7 @@ while True:
                         daenpassant=False
                         places=[]
                         pieceindex=clickedspace(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
-                        places=pieces[pieceindex].calc_move_opt(cheesboardmap,takedeep)
+                        places=pieces[pieceindex].calc_move_opt(cheesboardmap,takedeep,pieces)
                         currenttrack=[pieces[pieceindex].x,pieces[pieceindex].y]
                         cheesboardmap=takedeep
                         takedeep=copy.deepcopy(cheesboardmap)
