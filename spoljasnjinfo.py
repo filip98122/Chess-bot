@@ -1,5 +1,5 @@
 import copy
-def clickedspace(map,x,y):
+def clickedspace(map,x,y,turn,pieces):
     tilevalue=map[y][x]
     if tilevalue=="..":
         return None
@@ -13,7 +13,7 @@ def clickedspace(map,x,y):
                 break
     return index
 
-def clickedspacezap(map,x,y,pieces):
+def clickedspacezap(map,x,y,pieces,turn):
     tilevalue=map[y][x]
     if tilevalue=="..":
         return None
@@ -168,12 +168,12 @@ def playmove(map,list,typee,pieceindex,turn,pieces,inwhat=None):
             pieces[pieceindex].pomeranje=True
             if pieces[pieceindex].pomeranje==False and (list[1]==6 or list[1]==2):
                 if list[1]==2:
-                    rooki=clickedspace(map,0,list[0])
+                    rooki=clickedspace(map,0,list[0],turn,pieces)
                     pieces[rooki].x=3
                     map[list[0]][0]=".."
                     map[list[0]][3]=f"t{turn}"
                 if list[1]==6:
-                    rooki=clickedspace(map,7,list[0])
+                    rooki=clickedspace(map,7,list[0],turn,pieces)
                     pieces[rooki].x=5
                     map[list[0]][7]=".."
                     map[list[0]][5]=f"t{turn}"
@@ -219,11 +219,12 @@ def playmove(map,list,typee,pieceindex,turn,pieces,inwhat=None):
         pass
     if dont==False:
         if map[list[0]][list[1]]!=".." and map[list[0]][list[1]][1]!=turn:
-            dead=clickedspacezap(map,list[1],list[0],pieces)
+            dead=clickedspacezap(map,list[1],list[0],pieces,turn)
             pieces[dead].alive=False
             if map[list[0]][list[1]]=="t":
                 pieces[dead].mrd=True
-        
+            
+
 
         map[list[0]][list[1]]=map[pieces[pieceindex].y][pieces[pieceindex].x]
         map[pieces[pieceindex].y][pieces[pieceindex].x]=".."
@@ -250,7 +251,7 @@ def playmove(map,list,typee,pieceindex,turn,pieces,inwhat=None):
     currenttrack=[-1,-1]
     verdict=seeifcheckmate(check,turn,map,takedeep,pieces)
     map=takedeep
-    value=board_judge(map,turn)
+    value=board_judge(map,turn,pieces)
     aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
     if verdict=="n":
         pass
@@ -373,10 +374,10 @@ def play(cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,chec
     typeee=type(pieces[a[lmoves[-1][1]][1]]).__name__
     typeee=typeee[0]
     if playerside=="b":
-        i=lmoves[-1][1]
+        i=lmoves[0][1]
         cheesboard,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,daenpassant,pieces,value=playmove(cheesboardmap,[a[i][0][0],a[i][0][1]],typeee,a[i][1],turn,pieces,a[i][-1])
     else:
-        i=lmoves[0][1]
+        i=lmoves[-1][1]
         cheesboard,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,daenpassant,pieces,value=playmove(cheesboardmap,[a[i][0][0],a[i][0][1]],typeee,a[i][1],turn,pieces,a[i][-1])
     return cheesboard,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces
 def new(over,info,p):
@@ -413,7 +414,7 @@ def new(over,info,p):
     daenpassant=False
     if over and go:
         turn=info["local"]["turn"]
-    value=board_judge(cheesboardmap,turn)
+    value=board_judge(cheesboardmap,turn,pieces)
     if over and go:
         check=info["local"]["check"]
         value=info["local"]["value"]
@@ -465,10 +466,10 @@ def seeifcheck(color,pieces,map,takedeep):
                 
                         
                 
-def space(y,x,pieces,map):
+def space(y,x,turn,pieces):
     index=None
     for i in range(len(pieces)):
-        if pieces[i].x==x and pieces[i].y==y and pieces[i].alive==True:
+        if pieces[i].x==x and pieces[i].y==y and pieces[i].alive==True and pieces[i].color==turn:
             index=i
             break
     return index    
@@ -755,7 +756,7 @@ class pesak:
                 if s.x+s.en_passant[i][0]>=0 and s.x+s.en_passant[i][0]<len(map[s.y+0]):
                     if map[s.y+0][s.x+s.en_passant[i][0]][0]=="p" and map[s.y+0][s.x+s.en_passant[i][0]][1]==s.oppositecolor:
                         if map[s.y+0][s.x+s.en_passant[i][0]][1]==s.oppositecolor:
-                            indexa=space(s.y+0,s.x+s.en_passant[i][0],pieces,map)
+                            indexa=space(s.y+0,s.x+s.en_passant[i][0],s.oppositecolor,pieces)
                             if pieces[indexa].justtwo:
                                 h=map
                                 h[s.y][s.x]=".."
@@ -1006,7 +1007,7 @@ class king:
             sah=seeifcheck(s.color,pieces,map,map1)
             if sah==False:
                 if map[s.y][s.x+1]==".." and map[s.y][s.x+2]=="..":
-                    o=space(s.y,s.x+3,pieces,map)
+                    o=space(s.y,s.x+3,turn,pieces)
                     cnt=False
                     if o==None:
                         pass
@@ -1037,7 +1038,7 @@ class king:
                                 if sah==False and sah1==False:
                                     s.moveopt.append([s.y,s.x+2])
                 if map[s.y][s.x-1]==".." and map[s.y][s.x-2]==".." and map[s.y][s.x-3]=="..":
-                    o=space(s.y,s.x-4,pieces,map)
+                    o=space(s.y,s.x-4,turn,pieces)
                     cnt=False
                     if o==None:
                         pass

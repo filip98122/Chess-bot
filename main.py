@@ -10,14 +10,14 @@ def takesave(info):
     save(info)
     info=read()
     return info
-def space(y,x):
+def space(y,x,turn,pieces):
     index=None
     for i in range(len(pieces)):
-        if pieces[i].x==x and pieces[i].y==y and pieces[i].alive==True:
+        if pieces[i].x==x and pieces[i].y==y and pieces[i].alive==True and pieces[i].color==turn:
             index=i
             break
     return index
-def clickedspace(map,x,y):
+def clickedspace(map,x,y,turn,pieces):
     tilevalue=map[y][x]
     if tilevalue=="..":
         return None
@@ -31,7 +31,7 @@ def clickedspace(map,x,y):
                 break
     return index
 
-def clickedspacezap(map,x,y,pieces):
+def clickedspacezap(map,x,y,pieces,turn):
     tilevalue=map[y][x]
     if tilevalue=="..":
         return None
@@ -174,7 +174,7 @@ while True:
                             sa1da=True
                         else:
                             try:
-                                pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)),pieces)
+                                pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)),pieces,turn)
                                 pieces[pojedena].alive=False
                                 if cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))][0]=="t":
                                     pieces[pojedena].mrd=True
@@ -211,12 +211,12 @@ while True:
                                 pass
                             if castle:
                                 if int(mousePos[0]//(WIDTH/8))==2:
-                                    rooki=clickedspace(cheesboardmap,0,int(mousePos[1]//(WIDTH/8)))
+                                    rooki=clickedspace(cheesboardmap,0,int(mousePos[1]//(WIDTH/8)),turn,pieces)
                                     pieces[rooki].x=3
                                     cheesboardmap[int(mousePos[1]//(WIDTH/8))][0]=".."
                                     cheesboardmap[int(mousePos[1]//(WIDTH/8))][3]=f"t{turn}"
                                 if int(mousePos[0]//(WIDTH/8))==6:
-                                    rooki=clickedspace(cheesboardmap,7,int(mousePos[1]//(WIDTH/8)))
+                                    rooki=clickedspace(cheesboardmap,7,int(mousePos[1]//(WIDTH/8)),turn,pieces)
                                     pieces[rooki].x=5
                                     cheesboardmap[int(mousePos[1]//(WIDTH/8))][7]=".."
                                     cheesboardmap[int(mousePos[1]//(WIDTH/8))][5]=f"t{turn}"
@@ -256,7 +256,7 @@ while True:
                     currenttrack=[-1,-1]
                     verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep,pieces)
                     cheesboardmap=takedeep
-                    value=board_judge(cheesboardmap,turn)
+                    value=board_judge(cheesboardmap,turn,pieces)
                     aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
                     if verdict=="n":
                         pass
@@ -279,7 +279,7 @@ while True:
                     if sa1da==False:
                         daenpassant=False
                         places=[]
-                        pieceindex=clickedspace(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
+                        pieceindex=clickedspace(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)),turn,pieces)
                         places=pieces[pieceindex].calc_move_opt(cheesboardmap,takedeep,pieces)
                         currenttrack=[pieces[pieceindex].x,pieces[pieceindex].y]
                         cheesboardmap=takedeep
@@ -506,7 +506,7 @@ while True:
                             sa1da=True
                         else:
                             try:
-                                pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)),pieces)
+                                pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)),turn)
                                 pieces[pojedena].alive=False
                                 pieces[pojedena].mrd=True
                             except:
@@ -542,12 +542,12 @@ while True:
                                 pass
                             if castle:
                                 if int(mousePos[0]//(WIDTH/8))==2:
-                                    rooki=clickedspace(cheesboardmap,0,int(mousePos[1]//(WIDTH/8)))
+                                    rooki=clickedspace(cheesboardmap,0,int(mousePos[1]//(WIDTH/8)),turn,pieces)
                                     pieces[rooki].x=3
                                     cheesboardmap[int(mousePos[1]//(WIDTH/8))][0]=".."
                                     cheesboardmap[int(mousePos[1]//(WIDTH/8))][3]=f"t{turn}"
                                 if int(mousePos[0]//(WIDTH/8))==6:
-                                    rooki=clickedspace(cheesboardmap,7,int(mousePos[1]//(WIDTH/8)))
+                                    rooki=clickedspace(cheesboardmap,7,int(mousePos[1]//(WIDTH/8)),turn,pieces)
                                     pieces[rooki].x=5
                                     cheesboardmap[int(mousePos[1]//(WIDTH/8))][7]=".."
                                     cheesboardmap[int(mousePos[1]//(WIDTH/8))][5]=f"t{turn}"
@@ -567,6 +567,12 @@ while True:
 #Actual movement up
 #Actual movement up
                 if nemoj:
+                    countzapojedanjevar=0
+                    for i in range(len(pieces)):
+                        if pieces[countzapojedanjevar].alive==False:
+                            del pieces[countzapojedanjevar]
+                            countzapojedanjevar-=1
+                        countzapojedanjevar+=1
                     nemoj=False
                     places=[]
                     daenpassant=False
@@ -587,7 +593,7 @@ while True:
                     currenttrack=[-1,-1]
                     verdict=seeifcheckmate(check,turn,cheesboardmap,takedeep,pieces)
                     cheesboardmap=takedeep
-                    value=board_judge(cheesboardmap,turn)
+                    value=board_judge(cheesboardmap,turn,pieces)
                     aaa=textures["font"].render(f"{value:.2f}",True,(0,0,0))
                     if verdict=="n":
                         pass
@@ -610,7 +616,7 @@ while True:
                     if sa1da==False:
                         daenpassant=False
                         places=[]
-                        pieceindex=clickedspace(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
+                        pieceindex=clickedspace(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)),turn,pieces)
                         places=pieces[pieceindex].calc_move_opt(cheesboardmap,takedeep,pieces)
                         currenttrack=[pieces[pieceindex].x,pieces[pieceindex].y]
                         cheesboardmap=takedeep
