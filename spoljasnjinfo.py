@@ -13,7 +13,7 @@ def clickedspace(map,x,y):
                 break
     return index
 
-def clickedspacezap(map,x,y):
+def clickedspacezap(map,x,y,pieces):
     tilevalue=map[y][x]
     if tilevalue=="..":
         return None
@@ -162,7 +162,7 @@ def all_moves(color,map):
                     a.append([l[j],i])
                     
     return a
-def playmove(map,list,typee,pieceindex,turn,inwhat=None):
+def playmove(map,list,typee,pieceindex,turn,pieces,inwhat=None):
     dont=False
     try:
         if typee =="k":
@@ -220,7 +220,7 @@ def playmove(map,list,typee,pieceindex,turn,inwhat=None):
         pass
     if dont==False:
         if map[list[0]][list[1]]!=".." and map[list[0]][list[1]][1]!=turn:
-            dead=clickedspacezap(map,list[1],list[0])
+            dead=clickedspacezap(map,list[1],list[0],pieces)
             pieces[dead].alive=False
             if map[list[0]][list[1]]=="t":
                 pieces[dead].mrd=True
@@ -323,6 +323,7 @@ def playmove(map,list,typee,pieceindex,turn,inwhat=None):
     return map,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,daenpassant,pieces,value
 def play(cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces):
     mapsaved=copy.deepcopy(cheesboardmap)
+    piecessaved=copy.deepcopy(pieces)
     a=all_moves(turn,cheesboardmap)
     lmoves=[]
     typeee="."
@@ -334,14 +335,16 @@ def play(cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,chec
         cheesboardmapq=copy.deepcopy(cheesboardmap)
         typeee=type(pieces[a[i][1]]).__name__
         typeee=typeee[0]
-        cheesboard1,turn1,nemoj1,places1,da1,currenttrack1,takedeep1,check1,sa1da1,daenpassant1,pieces1,value1=playmove(cheesboardmapq,[a[i][0][0],a[i][0][1]],typeee,a[i][1],turn,a[i][-1])#map,list,typee,pieceindex,turn,inwhat=None
+        piecessaved=copy.deepcopy(pieces)
+        cheesboard1,turn1,nemoj1,places1,da1,currenttrack1,takedeep1,check1,sa1da1,daenpassant1,pieces1,value1=playmove(cheesboardmapq,[a[i][0][0],a[i][0][1]],typeee,a[i][1],turn,piecessaved,a[i][-1])#map,list,typee,pieceindex,turn,inwhat=None
         
         ai=all_moves(turn1,cheesboardmap)   #not actual ai, A out of i
         for j in range(len(ai)):
             cheesboardmap1=copy.deepcopy(cheesboard1)
             typeee=type(pieces[ai[j][1]]).__name__
             typeee=typeee[0]
-            cheesboardmap2,turn2,nemoj2,places2,da2,currenttrack2,takedeep2,check2,sa1da2,daenpassant2,pieces2,value2=playmove(cheesboardmap1,[ai[j][0][0],ai[j][0][1]],typeee,ai[j][1],turn1,ai[j][-1])
+            pieces1saved=copy.deepcopy(pieces1)
+            cheesboardmap2,turn2,nemoj2,places2,da2,currenttrack2,takedeep2,check2,sa1da2,daenpassant2,pieces2,value2=playmove(cheesboardmap1,[ai[j][0][0],ai[j][0][1]],typeee,ai[j][1],turn1,pieces1saved,ai[j][-1])
             lmoves.append([value2,i])
     
     
@@ -372,10 +375,10 @@ def play(cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,chec
     typeee=typeee[0]
     if playerside=="b":
         i=lmoves[-1][1]
-        cheesboard,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,daenpassant,pieces,value=playmove(cheesboardmap,[a[i][0][0],a[i][0][1]],typeee,a[i][1],turn,a[i][-1])
+        cheesboard,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,daenpassant,pieces,value=playmove(cheesboardmap,[a[i][0][0],a[i][0][1]],typeee,a[i][1],turn,pieces,a[i][-1])
     else:
         i=lmoves[0][1]
-        cheesboard,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,daenpassant,pieces,value=playmove(cheesboardmap,[a[i][0][0],a[i][0][1]],typeee,a[i][1],turn,a[i][-1])
+        cheesboard,turn,nemoj,places,da,currenttrack,takedeep,check,sa1da,daenpassant,pieces,value=playmove(cheesboardmap,[a[i][0][0],a[i][0][1]],typeee,a[i][1],turn,pieces,a[i][-1])
     return cheesboard,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces
 def new(over,info,p):
     go=True
@@ -696,7 +699,7 @@ class pesak:
             s.spaces=[[0,1]]
             s.eatopt=[[1,1],[-1,1]]
             s.en_passant=[[-1,1],[1,1]]
-    def calc_move_opt(s,map,map1):
+    def calc_move_opt(s,map,map1,):
         s.moveopt=[]
         for i in range(len(s.spaces)):
             try:

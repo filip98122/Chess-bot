@@ -31,7 +31,7 @@ def clickedspace(map,x,y):
                 break
     return index
 
-def clickedspacezap(map,x,y):
+def clickedspacezap(map,x,y,pieces):
     tilevalue=map[y][x]
     if tilevalue=="..":
         return None
@@ -174,7 +174,7 @@ while True:
                             sa1da=True
                         else:
                             try:
-                                pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
+                                pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)),pieces)
                                 pieces[pojedena].alive=False
                                 if cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))][0]=="t":
                                     pieces[pojedena].mrd=True
@@ -506,7 +506,7 @@ while True:
                             sa1da=True
                         else:
                             try:
-                                pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)))
+                                pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)),pieces)
                                 pieces[pojedena].alive=False
                                 pieces[pojedena].mrd=True
                             except:
