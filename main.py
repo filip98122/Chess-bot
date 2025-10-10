@@ -26,7 +26,7 @@ def clickedspace(map,x,y,turn,pieces):
     else:
         index=None
         for i in range(len(pieces)):
-            if pieces[i].x==x and pieces[i].y==y and pieces[i].alive==True:
+            if pieces[i].x==x and pieces[i].y==y and pieces[i].alive==True and pieces[i].color==turn:
                 index=i
                 break
     return index
@@ -437,9 +437,9 @@ while True:
         info=takesave(info)
         prozor=-1
     if prozor==3:
-        #if turn != playerside:
-            
-        if mouseState[0] and turn==playerside:
+        if turn!=playerside:
+            cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces=play(cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces)
+        elif mouseState[0] and turn==playerside:
             try:
                 if daenpassant==False:
                     polje=cheesboardmap[int(mousePos[1]//(WIDTH/8))][int(mousePos[0]//(WIDTH/8))]
@@ -506,7 +506,7 @@ while True:
                             sa1da=True
                         else:
                             try:
-                                pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)),turn)
+                                pojedena=clickedspacezap(cheesboardmap,int(mousePos[0]//(WIDTH/8)),int(mousePos[1]//(WIDTH/8)),pieces,turn)
                                 pieces[pojedena].alive=False
                                 pieces[pojedena].mrd=True
                             except:
@@ -631,8 +631,6 @@ while True:
 
             except:
                 pass
-        if turn!=playerside:
-            cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces=play(cheesboardmap,breaksure,turn,nemoj,places,da,currenttrack,takedeep,check,prozor,sa1da,lprom,daenpassant,pieces,value,playerside,allpieces)
         countzapojedanjevar=0
         for i in range(len(pieces)):
             if pieces[countzapojedanjevar].alive==False:
